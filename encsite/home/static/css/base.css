@@ -1,0 +1,43 @@
+.glass_effect {
+    color: white;
+    background-color: rgba(1, 62, 175, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: -15px 15px 12px rgba(0,0,0, 0.35);
+    cursor: default
+}
+
+body {
+    background-color: rgb(19, 27, 100);
+    position: relative;
+    height: 110vh;
+    width: 100vw;
+}
+
+body::before {
+    content: ' ';
+    background: url("../img/background.jpg");
+    position: absolute;
+    top: -10px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-size: cover;
+}
+
+#brandname:hover {
+    cursor: default;
+}
+#brandname {
+    user-select: none;
+}
+
+@media (max-width:991px){
+    body{
+        height: 150vh;
+    }
+    body::before{
+        content: ' ';
+        background: url("../img/mbackground.jpg");
+        background-size: cover;
+    }
+}
