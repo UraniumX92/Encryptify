@@ -1,10 +1,29 @@
 {% extends 'base.html' %}
 
 {% block title %} 
-Text - SoftEncryptor
+Text - Encryptify
 {% endblock %} 
 
+{% load static %}
+{% block style %} 
+<link rel="stylesheet" href="{% static 'css/applanding.css' %}">
+{% endblock %}
+
+{% block textactive %} active {% endblock %}
+
 {% block content %} 
-<p class="text-start glass_effect rounded-4 m-3 p-3" style="white-space: pre-line;">Hello Text
+<p class="text-start glass_effect rounded-4 m-3 p-3">
+    <b>Encriptify</b> also offers text encryption technologies to keep your private messages secure. We understand that privacy is important, which is why we offer three unique encryption methods that are specifically designed for English text.<br>
+    Our first encryption method is a modified version of the classic Vigenere cipher. While traditional Vigenere ciphers use only 26 letters of the alphabet, our algorithm uses over 250 characters to create a stronger, more secure encryption. This ensures that your messages remain protected.<br>
+    Our second encryption method is based on a scrambling technique. By generating a random seed based on the key you provide, we scramble the text to create a unique, encrypted message. This makes it incredibly difficult for anyone to decipher your message without access to the correct key.<br>
+    Finally, our third encryption method involves XORing the bits of the text with the given key. This creates a highly secure code that is practically impossible to break without access to the key.<br>
+    All of our encryption methods are designed to be user-friendly and easy to use, even for those who may not be familiar with encryption technologies. <br>
+    Simply select the encryption method from buttons below and input your message and key, and Encriptify will handle the rest. <br>
+    With our encryption technologies, you can have peace of mind knowing that your messages are safe and secure.<br>
 </p>
+<div class="btn_container glass_effect rounded-5 mx-auto p-3">
+    <a class="btn btn-outline-info rounded-pill m-2 px-2" href="#" role="button">Special Vigenere cipher</a>
+    <a class="btn btn-outline-info rounded-pill m-2 px-2" href="#" role="button">XOR+Scramble</a>
+    <a class="btn btn-outline-info rounded-pill m-2 px-2" href="#" role="button">Scramble</a>
+</div>
 {% endblock %}

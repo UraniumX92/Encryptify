@@ -1,10 +1,35 @@
 {% extends 'base.html' %}
 
 {% block title %} 
-Image - SoftEncryptor
+Image - Encryptify
 {% endblock %} 
 
+{% load static %}
+{% block style %} 
+<link rel="stylesheet" href="{% static 'css/applanding.css' %}">
+{% endblock %}
+
+{% block imageactive %} active {% endblock %}
+
 {% block content %} 
-<p class="text-start glass_effect rounded-4 m-3 p-3" style="white-space: pre-line;">Hello Image
+<p class="text-start glass_effect rounded-4 m-3 p-3">
+    Image encryption is a procedure which converts plain image to an encrypted image by employing a secret key. The decryption process decrypts the cipher image into the original image by employing the same key. <br>
+    Image encryption can provide security to your multimedia data by changing their pixel values and/or locations using different algorithms. <br>
+    Encriptify gives you three options to encrypt your images: <br>
+    Simple encryption, Text-to-image and Steganography of images. <br>
+    Simple encryption is a feature that encrypts your image with a password or a key without changing its format. <br>
+    Text-to-image is a feature that turns your text into an image after encrypting it with a password or a key. <br>
+    This makes it more difficult for anyone to decode your message without knowing the key. <br>
+    Steganography is a feature that hides your encrypted text within another image that you choose. <br>
+    This makes it almost impossible for anyone to notice or reveal your message without knowing the key and the original image. <br>
+    To use these features, just select one of the features from the buttons below and follow the steps.You will need to upload your image, enter a password or a key to encrypt or decrypt your image.<br>
+    You can download your encrypted/decrypted images as files.<br>
+    Encriptify is simple and secure.<br>
+    Give it a try and have fun!<br>
 </p>
+<div class="btn_container glass_effect rounded-5 mx-auto p-3">
+    <a class="btn btn-outline-info rounded-pill m-2 px-2" href="#" role="button">Encrypt Image</a>
+    <a class="btn btn-outline-info rounded-pill m-2 px-2" href="#" role="button">Text to image / Image to text</a>
+    <a class="btn btn-outline-info rounded-pill m-2 px-2" href="#" role="button">Steganography of Image</a>
+</div>
 {% endblock %}

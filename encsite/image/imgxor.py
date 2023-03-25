@@ -1,9 +1,10 @@
 from PIL import Image
+import numpy as np
 from itertools import chain
 import utils
 
 
-def xor_img_data(img_arr:list, key:list) -> list:
+def xor_img_data(img_arr:np.ndarray, key:list) -> list:
     """
     takes list of rgb values of image and encrypts it using key
 
@@ -15,31 +16,28 @@ def xor_img_data(img_arr:list, key:list) -> list:
     k_len = len(key)
     key = utils.key_mod(key)
     # Repeating key to match the size of the img_array list. this method is faster than previous method
-    key = (key*((size//len(key))+1))[:size]
-    for i in range(size):
-        img_arr[i] = img_arr[i] ^ key[i]
+    key = (key*((size//k_len)+1))[:size]
+    key = np.array(key).astype('uint8')
+    img_arr ^= key # xor'ing each value of img_arr with key value
     return img_arr
 
-
-def img_to_list(img:Image.Image) -> list:
+def img_to_array(img:Image.Image):
     """
-    Takes an image and returns it's rgb values as list
+    Takes an image and returns it's rgb values as array
 
     :param img: PIL.Image.Image
-    :return: list
+    :return: np.ndarray
     """
-    return list(chain.from_iterable(img.getdata()))
+    return np.array(img).flatten()
 
-
-def list_to_img(img_list:list,height:int,width:int) -> Image.Image:
+def array_to_img(imgarr:np.ndarray, height:int, width:int):
     """
-    takes list of rgb values and creates an image using the values and returns it
+    Takes array of rgb values and creates an image using the values and returns it
 
-    :param img_list : list
+    :param img_list : np.ndarray
     :return: PIL.Image.Image
     """
-    return Image.frombytes("RGB", (width,height), bytes(img_list))
-
+    return Image.fromarray(imgarr.reshape((height, width, 3)), "RGB")
 
 def encrypt_image(img:Image.Image,key:str="") -> Image.Image:
     """
@@ -51,10 +49,10 @@ def encrypt_image(img:Image.Image,key:str="") -> Image.Image:
     key = utils.get_key(key)
     img = img.convert(mode="RGB") if img.mode != "RGB" else img
     width , height = img.size
-    img_data = img_to_list(scrambler(img))
+    img_data = img_to_array(scrambler(img, key))
     xored = xor_img_data(img_data,key)
-    return list_to_img(xored,height,width)
-
+    nimg = array_to_img(xored, height, width)
+    return nimg
 
 def decrypt_image(img:Image.Image,key:str) -> Image.Image:
     """
@@ -67,12 +65,12 @@ def decrypt_image(img:Image.Image,key:str) -> Image.Image:
     key = utils.get_key(key)
     img = img.convert(mode="RGB") if img.mode != "RGB" else img
     width, height = img.size
-    img_data = img_to_list(img)
+    img_data = img_to_array(img)
     xored = xor_img_data(img_data, key)
-    img2 = list_to_img(xored, height=height, width=width)
-    data = img_to_list(unscrambler(img2))
-    return list_to_img(data, height, width)
-
+    img2 = array_to_img(xored, height=height, width=width)
+    data = img_to_array(unscrambler(img2, key))
+    nimg = array_to_img(data, height, width)
+    return nimg
 
 def resizer(img:Image.Image,max_size:int) -> Image.Image:
     """
@@ -87,8 +85,7 @@ def resizer(img:Image.Image,max_size:int) -> Image.Image:
     new_size = int(multiplier*width),int(multiplier*height)
     return img.resize(new_size)
 
-
-def scrambler(img) -> Image.Image:
+def scrambler(img,key) -> Image.Image:
     """
     Takes an image and scrambles it and returns the scrambled image
     (this function is inverse of unscrambler(img) function)
@@ -96,15 +93,13 @@ def scrambler(img) -> Image.Image:
     :return: PIL.Image.Image
     """
     w,h = img.size
-    data = img_to_list(img)
-    data = utils.split_and_flip(data)
-    newimg = list_to_img(data, height=h, width=w)
-    newimg = newimg.rotate(90, expand=1)
-    data = utils.split_and_flip(img_to_list(newimg))
-    return list_to_img(data, width=h, height=w).rotate(-90,expand=1)
+    data = img_to_array(img)
+    seed = utils.get_seed(key[::-1])
+    data = utils.scramble(data,seed)
+    return array_to_img(data, height=h, width=w)
 
 
-def unscrambler(img) -> Image.Image:
+def unscrambler(img,key) -> Image.Image:
     """
     Takes an image and performs inverse of scrambling algorithm
     i.e unscrambles the scrambled image and returns it
@@ -113,21 +108,10 @@ def unscrambler(img) -> Image.Image:
     :return: PIL.Image.Image
     """
     w,h = img.size
-    img = img.rotate(90,expand=1)
-    data = utils.split_and_flip(img_to_list(img))
-    newimg = list_to_img(data, w, h).rotate(-90, expand=1)
-    data = utils.split_and_flip(img_to_list(newimg))
-    return list_to_img(data, h, w)
-
-# todo: give estimated time of encryption/decryption for a given image
-#   use this formula for calculation
-#   x = (avg * (w*h)) / (1920*1080)
-#   here,
-#   x = Estimated time to encrypt/decrypt the image,
-#   avg = Average time taken to encrypt/decrypt the blue car image of size 1920x1080,
-#   w,h = width , height of given image.
-#   Note: x gives the maximum possible time. NEEDS ACCURACY IMPROVEMENT for largeer images.
-#   and... I think we are good to go for the website development now.
+    data = img_to_array(img)
+    seed = utils.get_seed(key[::-1])
+    data = utils.unscramble(data, seed)
+    return array_to_img(data, h, w)
 
 if __name__ == '__main__':
     pass

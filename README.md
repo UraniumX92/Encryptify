@@ -1,5 +1,5 @@
-# EncryptorSite
+# Encryptify
 
-*Development-1.0*
+*Development-commit-2*
 
 A text and image encryption/decryption website made using Python (Django)

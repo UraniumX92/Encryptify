@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign up - Encryptify</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+</head>
+
+<body>
+    <div class="signup-container glass_effect rounded-5 mx-auto p-3">
+        <form action="/signup" method="post" onsubmit="return onSubmit()"> {% csrf_token %}
+            <div class="input-container">
+                <h2 class="mx-auto">Sign up</h2>
+                <div class="mb-2">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" placeholder="Your Email" name="email" id="email" value="{{values.email}}" aria-describedby="emailHelp" required>
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-2">
+                    <label for="email" class="form-label">Your Name</label>
+                    <input type="text" class="form-control" placeholder="Your Name" name="name" value="{{values.name}}" id="name" required>
+                    <div class="form-text">Name cannot contain more than 100 characters</div>
+                </div>
+                <!-- <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <button class="btn btn-info" type="button" id="button-addon2">Button</button>
+                </div> -->
+                <div class="mb-2">
+                    <label for="password1" class="form-label">Password</label>
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="password1" ondblclick="show_hide()" required>
+                    <div class="form-text">Make sure your password contains atleast 8 characters</div>
+                </div>
+                <div class="mb-2">
+                    <label for="password2" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" placeholder="Confirm Password" name="password2" id="password2" ondblclick="show_hide()" required>
+                    <div class="form-text">Double tap on your passwords to show/hide</div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input radreset" name="gender" type="radio" role="switch" id="gender-radio-m" value="Male" checked>
+                        <label class="form-check-label" for="gender-radio-m">Male</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input radreset" name="gender" type="radio" role="switch" id="gender-radio-f" value="Female">
+                        <label class="form-check-label" for="gender-radio-f">Female</label>
+                    </div>
+                    <div class="form-text fw-bold fs-6" id="err">
+                        {% if err %} 
+                        {{err}}
+                        {% endif %}
+                    </div>
+                </div>
+                <div id="btn-container">
+                    <a class="btn btn-primary m-1" href="/login" id="login-redirect" role="button">Click here to Login</a>
+                    <button type="submit" class="btn btn-primary m-1" id="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/signup.js' %}"></script>
+</body>
+
+</html>

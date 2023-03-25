@@ -1,0 +1,25 @@
+.card_img{
+    width: 300px;
+    height: 300px;
+}
+
+br{
+    margin: 0px;
+    padding: 0px;
+}
+
+.info_card{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.card_text > a{
+    color: rgb(150, 250, 230);
+}
+
+@media only screen and (max-width: 991px){
+    .card_img{
+        display: none;
+    }
+}

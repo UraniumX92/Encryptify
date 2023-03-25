@@ -1,21 +1,62 @@
 {% extends 'base.html' %}
 
 {% block title %} 
-Home - SoftEncryptor 
+Home - Encryptify 
 {% endblock %}
 
+{% load static %}
 {% block style %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
+
+{% block homeactive %} active {% endblock %}
 
 {% block content %}
-<p class="text-start glass_effect rounded-4 m-3 p-3" style="white-space: pre-line;">Welcome to SoftEncryptor, where you can easily encrypt your text and images using our custom encryption algorithm. 
-    Our algorithm provides reliable and secure protection for your sensitive data.
-    Our platform is designed to be user-friendly, allowing you to quickly and easily encrypt your data with just a few clicks. 
-    Simply upload your file, choose your encryption preferences, and our algorithm will take care of the rest, ensuring that your information is kept safe and secure.
-    At our website, we understand the importance of protecting your data from unauthorized access.
-    That's why we take every precaution to ensure that your information is secure, even in today's digital age. 
-    Our platform is fully compatible with all major devices and browsers, allowing you to encrypt your data from anywhere, at any time.
-    Whether you need to send a confidential message or protect personal photos, our platform is the perfect solution.
-    So why wait? Start encrypting your text and images today using our website and enjoy the peace of mind that comes with knowing your data is secure.
-</p>
+    <p class="text-start glass_effect card_text rounded-4 lh-sm m-3 p-3">
+        <b>Welcome to Encriptify,</b> here you can easily encrypt your text and images using our custom encryption algorithm. <br>
+        Our algorithm provides reliable and secure protection for your sensitive data.<br>
+        Our platform is designed to be user-friendly, allowing you to quickly and easily encrypt your data with just a few clicks. <br>
+        Simply upload your file, choose your encryption preferences, and our algorithm will take care of the rest, ensuring that your information is kept safe and secure.<br>
+        At our website, we understand the importance of protecting your data from unauthorized access.<br>
+        That's why we take every precaution to ensure that your information is secure, even in today's digital age. <br>
+        Our platform is fully compatible with all major devices and browsers, allowing you to encrypt your data from anywhere, at any time.<br>
+        Whether you need to send a confidential message or protect personal photos, our platform is the perfect solution.<br>
+        So why wait? Start encrypting your text and images today using our website and enjoy the peace of mind that comes with knowing your data is secure.<br>
+    </p>
+    <div class="glass_effect info_card rounded-4 m-3 p-3" id="textinfo">
+        <!-- image on left side -->
+        <img class="card_img rounded-5 mx-3 px-2" src="{% static 'text/img/txtcard.jpg' %}" alt="">
+        <!-- description on right -->
+        <p class="text-start card_text lh-sm">
+            <b>Encriptify</b> also offers text encryption technologies to keep your private messages secure. We understand that privacy is important, which is why we offer three unique encryption methods that are specifically designed for English text.<br>
+            Our first encryption method is a modified version of the classic Vigenere cipher. While traditional Vigenere ciphers use only 26 letters of the alphabet, our algorithm uses over 250 characters to create a stronger, more secure encryption. This ensures that your messages remain protected.<br>
+            Our second encryption method is based on a scrambling technique. By generating a random seed based on the key you provide, we scramble the text to create a unique, encrypted message. This makes it incredibly difficult for anyone to decipher your message without access to the correct key.<br>
+            Finally, our third encryption method involves XORing the bits of the text with the given key. This creates a highly secure code that is practically impossible to break without access to the key.<br>
+            All of our encryption methods are designed to be user-friendly and easy to use, even for those who may not be familiar with encryption technologies. <br>
+            Simply go to <a href="/text/">our text utility page</a> select the encryption method and input your message and key, and Encriptify will handle the rest. <br>
+            With our encryption technologies, you can have peace of mind knowing that your messages are safe and secure.<br>
+        </p>
+    </div>
+    <div class="glass_effect info_card rounded-4 m-3 p-3" id="imageinfo">
+        <!-- description on left -->
+        <p class="text-start card_text lh-sm">
+            Do you have images that you want to protect from unauthorized viewing or tampering? <br>
+            Do you want to encrypt your images with a password or a key? If yes, then <b>Encriptify</b> is the website for you! Encriptify is a website that lets you encrypt your images using various methods. <br>
+            Image encryption is a procedure which converts plain image to an encrypted image by employing a secret key. The decryption process decrypts the cipher image into the original image by employing the same key. <br>
+            Image encryption can provide security to your multimedia data by changing their pixel values and/or locations using different algorithms. <br>
+            Encriptify gives you three options to encrypt your images: <br>
+            Simple encryption, Text-to-image and Steganography. <br>
+            Simple encryption is a feature that encrypts your image with a password or a key without changing its format. <br>
+            Text-to-image is a feature that turns your text into an image after encrypting it with a password or a key. <br>
+            This makes it more difficult for anyone to decode your message without knowing the key. <br>
+            Steganography is a feature that hides your encrypted text within another image that you choose. <br>
+            This makes it almost impossible for anyone to notice or reveal your message without knowing the key and the original image. <br>
+            To use these features, go to <a href="/image/">our image utility page</a> and just select one of the features from the menu and follow the steps.You will need to upload your image, enter a password or a key to encrypt or decrypt your image.<br>
+            You can download your encrypted/decrypted images as files.<br>
+            Encriptify is simple and secure.<br>
+            Give it a try and have fun!<br>
+        </p>
+        <!-- image on right -->
+        <img class="card_img rounded-5 mx-3 px-3" src="{% static 'image/img/imgcard.jpg' %}" alt="">
+    </div>
 {% endblock %}

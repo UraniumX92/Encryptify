@@ -12,34 +12,37 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     position: relative;
-    height: auto;
+    height: 120vh;
     width: 99vw;
 }
 
-.lslink{
-    color: lightgrey;
-    text-decoration: none;
+.signup-container{
+    display: flex;
+    flex-direction: column;
+    width: 40vw;
+    margin-top: 25vh;
+    justify-content: center;
 }
 
-.lslink:hover{
-    color:rgb(172, 230, 253);
-}
 
-.loginlink:hover{
-    color:white
-}
-
-#brandname:hover {
-    cursor: default;
-}
-#brandname {
-    user-select: none;
-}
-
-.login-container{
+.input-container{
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.form-text{
+    color:rgb(148, 215, 219);
+}
+
+#btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+#err{
+    color:rgb(248, 54, 54)
 }
 
 @media (max-width:991px){
@@ -47,4 +50,10 @@ body {
         background: url("../img/mbackground.jpg");
         background-size: cover;
     }
+    .signup-container{
+        width: 90vw;
+        margin-top: 25vh;
+        justify-content: center;
+    }
+    
 }

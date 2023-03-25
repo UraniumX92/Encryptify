@@ -22,7 +22,6 @@ def binary_to_text(bin_str:str):
         text += chr(binary_to_decimal(bnum))
     return text
 
-
 def text_to_binary(txt:str):
     bstr = ""
     for char in txt:
