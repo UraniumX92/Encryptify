@@ -113,5 +113,83 @@ def unscrambler(img,key) -> Image.Image:
     data = utils.unscramble(data, seed)
     return array_to_img(data, h, w)
 
+def p_scram(img:Image.Image,key):
+    pdata = np.array(img)
+    pdata = pdata.reshape((img.height*img.width,3))
+    seed = utils.get_seed(key[::-1])
+    scram = utils.scramble(pdata,seed)
+    scram = scram.reshape((img.height,img.width,3))
+    nimg = Image.fromarray(scram,"RGB")
+    return nimg
+
+def p_unscram(img:Image.Image,key):
+    pdata = np.array(img)
+    pdata = pdata.reshape((img.height*img.width,3))
+    seed = utils.get_seed(key[::-1])
+    unscram = utils.unscramble(pdata,seed)
+    unscram = unscram.reshape((img.height,img.width,3))
+    nimg = Image.fromarray(unscram,"RGB")
+    return nimg
+
+# def pixel_scrambler(img,key):
+#     hscram = p_scram(img, key)
+#     hscram = hscram.rotate(90,expand=True)
+#     vscram = p_scram(hscram, key)
+#     vscram = vscram.rotate(-90,expand=True)
+#     return vscram
+#
+# def pixel_unscrambler(img,key):
+#     nimg = img.rotate(90,expand=True)
+#     vuscram = p_unscram(nimg, key)
+#     vuscram = vuscram.rotate(-90, expand=True)
+#     huscram = p_unscram(vuscram, key)
+#     return huscram
+
 if __name__ == '__main__':
-    pass
+    key = utils.get_key(input("Enter key: "))
+    car = Image.open("car.png")
+    fruit = Image.open("fruit.jpg")
+    inp = '1'
+
+    t1 = utils.timenow()
+    cs = p_scram(car, key)
+    t2 = utils.timenow()
+    print(f"scram car: {t2-t1}")
+
+    t1 = utils.timenow()
+    fs = p_scram(fruit, key)
+    t2 = utils.timenow()
+    print(f"scram fruit: {t2-t1}")
+
+    t1 = utils.timenow()
+    cu = p_unscram(cs, key)
+    t2 = utils.timenow()
+    print(f"unscram car: {t2-t1}")
+
+    t1 = utils.timenow()
+    fu = p_unscram(fs, key)
+    t2 = utils.timenow()
+    print(f"unscram fruit: {t2-t1}")
+    while inp=='1':
+        img = input("1.car\n2.fruit\n: ")
+        state = input("1.scrambled\n2.unscrambled\n: ")
+        match img,state:
+            case '1','1':
+                cs.show()
+            case '1','2':
+                cu.show()
+            case '2','1':
+                fs.show()
+            case '2','2':
+                fu.show()
+            case _:
+                pass
+        inp = input("1.Continue\n2.Exit\n: ")
+        if inp=='1':
+            option = input("Enter // for same key, else new key: ")
+            if option!='//':
+                key = utils.get_key(option)
+                if input('1.us car\n2.us fruit\n: ')=='1':
+                    p_unscram(cs, key).show()
+                else:
+                    p_unscram(fs, key).show()

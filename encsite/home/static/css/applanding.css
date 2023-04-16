@@ -5,11 +5,12 @@ body{
 .btn_container{
     display: flex;
     flex-direction: row;
-    width: 42vw;
+    width: 80vw;
     justify-content: center;
+    align-self: center;
 }
 
-@media only screen and (max-width: 991px){
+@media (max-width: 768px){
     .btn_container{
         flex-direction: column;
         width: 90vw;

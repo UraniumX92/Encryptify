@@ -9,5 +9,5 @@ def index(req):
         params:dict = {
             'userinfo': uinfo.copy()
         }
-        return render(req,'text/index.html',params)
-    return render(req,'text/index.html')
+        return render(req,'text/tlanding.html',params)
+    return render(req,'text/tlanding.html')

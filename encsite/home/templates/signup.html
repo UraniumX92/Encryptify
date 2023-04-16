@@ -1,67 +1,206 @@
-<!doctype html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    {% load static %}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign up - Encryptify</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
-</head>
+{% block title %}Signup - Encryptify {% endblock title %}
 
-<body>
-    <div class="signup-container glass_effect rounded-5 mx-auto p-3">
-        <form action="/signup" method="post" onsubmit="return onSubmit()"> {% csrf_token %}
-            <div class="input-container">
-                <h2 class="mx-auto">Sign up</h2>
-                <div class="mb-2">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" placeholder="Your Email" name="email" id="email" value="{{values.email}}" aria-describedby="emailHelp" required>
-                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+{% endblock style %}
+
+{% block signupactive %}active{% endblock signupactive %}
+
+{% block content %}
+<div class="signup-container glass_effect rounded-5 mx-auto p-3">
+    <form action="/signup" id="signup-form" method="post" onsubmit="return onSubmit()"> {% csrf_token %}
+        <div class="input-container">
+            <h2 class="mx-auto">Sign up</h2>
+            <div class="mb-2">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" placeholder="Your Email" name="email" id="email"
+                    value="{{values.email}}" aria-describedby="emailHelp" required>
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-2">
+                <label for="name" class="form-label">Your Name</label>
+                <input type="text" class="form-control" placeholder="Your Name" name="name" value="{{values.name}}"
+                    id="name" required>
+                <div class="form-text">Name cannot contain more than 100 characters</div>
+            </div>
+            <div class="mb-2">
+                <label for="password1" class="form-label">Password</label>
+                <input type="password" class="form-control" placeholder="Password" name="password" id="password1"
+                    ondblclick="show_hide()" required>
+                <div class="form-text">Make sure your password contains atleast 8 characters</div>
+            </div>
+            <div class="mb-2">
+                <label for="password2" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" placeholder="Confirm Password" name="password2"
+                    id="password2" ondblclick="show_hide()" required>
+                <div class="form-text">Double tap on your passwords to show/hide</div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input radreset" name="gender" type="radio" role="switch"
+                        id="gender-radio-m" value="Male" checked required>
+                    <label class="form-check-label" for="gender-radio-m">Male</label>
                 </div>
-                <div class="mb-2">
-                    <label for="email" class="form-label">Your Name</label>
-                    <input type="text" class="form-control" placeholder="Your Name" name="name" value="{{values.name}}" id="name" required>
-                    <div class="form-text">Name cannot contain more than 100 characters</div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input radreset" name="gender" type="radio" role="switch"
+                        id="gender-radio-f" value="Female">
+                    <label class="form-check-label" for="gender-radio-f">Female</label>
                 </div>
-                <!-- <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
-                    <button class="btn btn-info" type="button" id="button-addon2">Button</button>
-                </div> -->
-                <div class="mb-2">
-                    <label for="password1" class="form-label">Password</label>
-                    <input type="password" class="form-control" placeholder="Password" name="password" id="password1" ondblclick="show_hide()" required>
-                    <div class="form-text">Make sure your password contains atleast 8 characters</div>
-                </div>
-                <div class="mb-2">
-                    <label for="password2" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" placeholder="Confirm Password" name="password2" id="password2" ondblclick="show_hide()" required>
-                    <div class="form-text">Double tap on your passwords to show/hide</div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input radreset" name="gender" type="radio" role="switch" id="gender-radio-m" value="Male" checked>
-                        <label class="form-check-label" for="gender-radio-m">Male</label>
-                    </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input radreset" name="gender" type="radio" role="switch" id="gender-radio-f" value="Female">
-                        <label class="form-check-label" for="gender-radio-f">Female</label>
-                    </div>
-                    <div class="form-text fw-bold fs-6" id="err">
-                        {% if err %} 
-                        {{err}}
-                        {% endif %}
-                    </div>
-                </div>
-                <div id="btn-container">
-                    <a class="btn btn-primary m-1" href="/login" id="login-redirect" role="button">Click here to Login</a>
-                    <button type="submit" class="btn btn-primary m-1" id="submit">Submit</button>
+                <div class="form-text fw-bold fs-6" id="err">
+                    {% if err %}
+                    {{err}}
+                    {% endif %}
                 </div>
             </div>
-        </form>
-    </div>
-    <script src="{% static 'js/base.js' %}"></script>
-    <script src="{% static 'js/signup.js' %}"></script>
-</body>
+            <div id="btn-container">
+                <button type="button" class="btn btn-primary m-1" data-bs-toggle="modal" data-bs-target="#tos_modal"
+                    id="submit">Submit</button>
+            </div>
+    </form>
+</div>
+{% endblock content %}
 
-</html>
+{% block script %}
+<script src="{% static 'js/signup.js' %}"></script>
+{% endblock script %}
+
+{% block modals %}
+<div class="modal fade" id="tos_modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="tos_header" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-2 fw-bold" id="tos_header">Terms of Service</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modal_text">
+                <p>
+                    <span class="fw-bold">Welcome to Encryptify!</span><br><br>
+
+                    By using our service, you agree to these terms. Please read them completely and carefully.<br><br>
+
+                    These terms of service ("Terms") govern your use of our website and/or mobile application
+                    (collectively, the "Service"). By accessing or using the Service, you agree to be bound by these
+                    Terms. If you do not agree to these Terms, do not use the Service.<br><br>
+
+                    <span class="fw-bold">User Eligibility:</span> You must be at least 13 years old to use this service.<br><br>
+
+                    <span class="fw-bold">User Conduct:</span> You agree to use the Service for lawful purposes only and not to engage in any
+                    behavior that is harmful, threatening, or illegal. You also agree not to use the Service to infringe
+                    on the intellectual property rights of others.<br><br>
+
+                    <span class="fw-bold">Intellectual Property:</span> The Service and all content included in the Service, including but not
+                    limited to text, graphics, logos, images, and software, are the property of Encryptify or its
+                    licensors and are protected by intellectual property laws.<br><br>
+
+                    <span class="fw-bold">File Encryption:</span> When you use our file encryption service, you agree to upload your files to our
+                    server for encryption. We store your encrypted files on our server for a limited period of time in
+                    order to provide the service. We protect your files from unauthorized access and will not share them
+                    with third parties, except as required by law.<br><br>
+
+                    <span class="fw-bold">File Storage:</span> If you choose to save your encrypted files on our server, we will store those files in
+                    our database with an associated user table. We will not share your files with third parties, except
+                    as required by law.<br><br>
+
+                    <span class="fw-bold">User Accounts:</span> We recommend that you create a user account to use our service. By creating an
+                    account, you agree to provide accurate and complete information about yourself. You also agree to
+                    maintain the confidentiality of your account information, including your username and password. You
+                    are responsible for all activities that occur under your account. As a registered user, you can
+                    access your saved files at any time and remove them if you want. If you use our service as a guest,
+                    you cannot save your files on our server.<br><br>
+
+                    <span class="fw-bold">Payment:</span> Our service is free to use. However, we may offer additional features or services for a
+                    fee. If you choose to purchase these features or services, you agree to pay the applicable fees (We
+                    currently do not have any features which require payment).<br><br>
+
+                    <span class="fw-bold">Disclaimer:</span> Our service is provided "as is" and we make no warranties or guarantees about its
+                    accuracy, completeness, or reliability. We are not responsible for any errors or omissions in the
+                    service, or for any loss or damage of any kind arising from or in connection with the use of our
+                    service.<br><br>
+
+                    <span class="fw-bold">Limitation of Liability:</span> In no event shall we be liable for any direct, indirect, incidental,
+                    special, or consequential damages arising from or in connection with the use of our service, even if
+                    we have been advised of the possibility of such damages.<br><br>
+
+                    <span class="fw-bold">Indemnification:</span> You agree to indemnify and hold us harmless from any claim or demand, including
+                    reasonable attorneys' fees, arising from or in connection with your use of our service or your
+                    breach of these terms.<br><br>
+
+                    <span class="fw-bold">Termination and Suspension:</span> We reserve the right to terminate or suspend your access to the Service
+                    at any time for any reason, including for violation of these Terms.<br><br>
+
+                    <span class="fw-bold">Changes to these Terms:</span> We may update these terms from time to time. We will notify you of any
+                    changes by posting the new terms on this page. Your continued use of our service after such changes
+                    constitutes your acceptance of the new terms.<br><br>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#pp_modal" class="btn btn-primary">Agree</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="pp_modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="pp_header" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-2 fw-bold" id="pp_header">Privacy Policy</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modal_text">
+                <p>
+                    <span class="fw-bold">Thank you for using Encryptify.</span><br>
+                    This Privacy Policy explains how we collect, use, and protect
+                    information about our users. <br><br>
+
+                    <span class="fw-bold">Information We Collect:</span> When you use Encryptify, we may collect personal information that you
+                    voluntarily provide, such as your name, email address, and payment information. We may also collect
+                    information about your device, such as your IP address, browser type, and operating system. We use
+                    this information to provide and improve our service.<br><br>
+
+                    <span class="fw-bold">Use of Cookies:</span> We use cookies and similar technologies to collect information about how you use our
+                    service. Cookies are small text files that are stored on your device when you visit our website. We
+                    use cookies to remember your preferences and to analyze how you use our service. You can disable
+                    cookies in your browser settings, but please note that this may affect your ability to use our
+                    service.<br><br>
+
+                    <span class="fw-bold">File Encryption:</span> When you use our file encryption service, you agree to upload your files to our
+                    server for encryption. We store your encrypted files on our server for a limited period of time in
+                    order to provide the service. We do not store the original unencrypted files.<br><br>
+
+                    <span class="fw-bold">File Storage:</span> If you choose to save your encrypted files on our server, we will store those files in
+                    our database with an associated user table. We will not share your files with third parties, except
+                    as required by law.<br><br>
+
+                    <span class="fw-bold">Third Party Services:</span> We may use third party services to help us provide and improve our service,
+                    such as hosting and payment processing services. These third parties may have access to your
+                    personal information, but only to the extent necessary to provide their services to us.<br><br>
+
+                    <span class="fw-bold">Security:</span> We take reasonable measures to protect the information we collect from unauthorized
+                    access, use, or disclosure. However, no method of transmission over the internet or electronic
+                    storage is completely secure.<br><br>
+
+                    <span class="fw-bold">Data Retention:</span>
+                    We will retain your personal information for as long as necessary to provide our service and as
+                    required by law.<br><br>
+
+                    <span class="fw-bold">Children:</span>
+                    Our service is not intended for children under the age of 13. We do not knowingly collect personal
+                    information from children under the age of 13.<br><br>
+
+                    <span class="fw-bold">Changes to this Policy:</span> We may update this Privacy Policy from time to time. We will notify you of
+                    any changes by posting the new Privacy Policy on this page. You are advised to review this Privacy
+                    Policy periodically for any changes.<br><br>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#tos_modal" class="btn btn-primary">Back to Terms of Service</button>
+                <button type="submit" form="signup-form" data-bs-dismiss="modal" class="btn btn-primary">Agree</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

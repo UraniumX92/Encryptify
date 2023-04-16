@@ -3,11 +3,20 @@ Image App Views Configuration
 """
 from django.shortcuts import render, redirect
 
-def index(req):
-    uinfo = req.session.get('userinfo')
+def index(request):
+    uinfo = request.session.get('userinfo')
     if uinfo:
-        params:dict = {
+        params = {
             'userinfo': uinfo.copy()
         }
-        return render(req,'image/index.html',params)
-    return render(req,'image/index.html')
+        return render(request,'image/ilanding.html',params)
+    return render(request,'image/ilanding.html')
+
+def encryption(request):
+    uinfo = request.session.get('userinfo')
+    if uinfo:
+        params = {
+            'userinfo' : uinfo.copy()
+        }
+        return render(request,'image/encryption.html',params)
+    return render(request,'image/encryption.html')

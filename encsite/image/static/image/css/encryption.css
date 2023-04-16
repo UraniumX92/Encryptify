@@ -1,0 +1,10 @@
+#imgPreview{
+    width: 20vw;
+    height: auto;
+}
+
+@media (max-width:768px){
+    #imgPreview{
+        width: 40vw;
+    }
+}

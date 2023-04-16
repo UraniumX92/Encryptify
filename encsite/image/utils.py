@@ -115,7 +115,7 @@ def load_json(filename):
         return json.load(load)
 
 
-def key_mod(key:int) -> int:
+def key_mod(key:list) -> list:
     """
     Modifies the given key before using it for encryption/decryption
 

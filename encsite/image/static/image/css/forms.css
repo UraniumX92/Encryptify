@@ -1,0 +1,29 @@
+body{
+    height: 105vh;
+}
+
+.form-text{
+    color:var(--help-text-color)
+}
+
+.form_container{
+    display: flex;
+    width: 60vw;
+    flex-direction: column;
+}
+
+.img_form{
+    display: flex;
+    width: auto;
+    flex-direction: column;
+}
+
+@media (max-width:768px){
+    .form_container{
+        width: 90vw;
+    }
+    .btn{
+        margin-right: auto;
+        margin-left: auto;
+    }
+}

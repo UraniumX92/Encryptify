@@ -1,11 +1,21 @@
-let p1 = document.getElementById('password1');
-let p2 = document.getElementById('password2');
-let err = document.getElementById('err');
-let email = document.getElementById('email');
-let uname = document.getElementById('name');
+const p1 = document.getElementById('password1');
+const p2 = document.getElementById('password2');
+const err = document.getElementById('err');
+const email = document.getElementById('email');
+const uname = document.getElementById('name');
+const genradios = document.getElementsByName('gender');
 
 p1.addEventListener('dblclick',show_hide);
 p2.addEventListener('dblclick',show_hide);
+
+function get_gender(){
+    for(var i = 0; i<genradios.length;i++){
+        var elm = genradios[i];
+        if(elm.checked){
+            return elm.value;
+        }   
+    }
+}
 
 function show_hide(){
     if (this.type=='text'){
@@ -21,6 +31,7 @@ function onSubmit(){
     let pv2 = p2.value;
     let email_val = email.value;
     let name_val = uname.value;
+    let gender = get_gender();
 
     if(name_val.length>100){
         err.innerHTML = "Name cannot contain more than 100 characters";
@@ -51,6 +62,7 @@ function onSubmit(){
                 'email' : email_val,
                 'password' : pv1,
                 'password2' : pv2,
+                'gender' : gender,
             }
             xhr.open('POST',url,false);
             xhr.setRequestHeader("X-CSRFToken", csrf_token); 

@@ -1,0 +1,31 @@
+Terms of Service:
+
+Welcome to Encryptify! 
+
+By using our service, you agree to these terms. Please read them carefully.
+
+These terms of service ("Terms") govern your use of our website and/or mobile application (collectively, the "Service"). By accessing or using the Service, you agree to be bound by these Terms. If you do not agree to these Terms, do not use the Service.
+
+User Eligibility: You must be at least 13 years old to use this service.
+
+User Conduct: You agree to use the Service for lawful purposes only and not to engage in any behavior that is harmful, threatening, or illegal. You also agree not to use the Service to infringe on the intellectual property rights of others.
+
+Intellectual Property: The Service and all content included in the Service, including but not limited to text, graphics, logos, images, and software, are the property of Encryptify or its licensors and are protected by intellectual property laws.
+
+File Encryption: When you use our file encryption service, you agree to upload your files to our server for encryption. We store your encrypted files on our server for a limited period of time in order to provide the service. We protect your files from unauthorized access and will not share them with third parties, except as required by law.
+
+File Storage: If you choose to save your encrypted files on our server, we will store those files in our database with an associated user table. We will not share your files with third parties, except as required by law.
+
+User Accounts: We recommend that you create a user account to use our service. By creating an account, you agree to provide accurate and complete information about yourself. You also agree to maintain the confidentiality of your account information, including your username and password. You are responsible for all activities that occur under your account. As a registered user, you can access your saved files at any time and remove them if you want. If you use our service as a guest, you cannot save your files on our server.
+
+Payment: Our service is free to use. However, we may offer additional features or services for a fee. If you choose to purchase these features or services, you agree to pay the applicable fees (We currently do not have any features which require payment).
+
+Disclaimer: Our service is provided "as is" and we make no warranties or guarantees about its accuracy, completeness, or reliability. We are not responsible for any errors or omissions in the service, or for any loss or damage of any kind arising from or in connection with the use of our service.
+
+Limitation of Liability: In no event shall we be liable for any direct, indirect, incidental, special, or consequential damages arising from or in connection with the use of our service, even if we have been advised of the possibility of such damages.
+
+Indemnification: You agree to indemnify and hold us harmless from any claim or demand, including reasonable attorneys' fees, arising from or in connection with your use of our service or your breach of these terms.
+
+Termination and Suspension: We reserve the right to terminate or suspend your access to the Service at any time for any reason, including for violation of these Terms.
+
+Changes to these Terms: We may update these terms from time to time. We will notify you of any changes by posting the new terms on this page. Your continued use of our service after such changes constitutes your acceptance of the new terms.

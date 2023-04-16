@@ -1,6 +1,6 @@
-let password_input = document.getElementById('password');
-let email_input = document.getElementById('email');
-let err = document.getElementById('err');
+const password_input = document.getElementById('password');
+const email_input = document.getElementById('email');
+const err = document.getElementById('err');
 
 password_input.addEventListener('dblclick',show_hide);
 

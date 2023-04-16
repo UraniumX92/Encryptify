@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} 
+{% endblock %} 
+
+{% load static %}
+
+{% block style %} 
+<link rel="stylesheet" href="{% static '/image/css/forms.css' %}">
+{% block istyle %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="glass_effect form_container rounded-5 mx-auto my-3 p-3">
+    <h3 id="formtitle" class="centered fw-bold">{% block form_title %} {% endblock %}</h3>
+    {% block form_content %} {% endblock %}
+</div>
+{% endblock %}
+
+{% block script %} 
+<script src="{% static '/image/js/img.js' %}"></script>
+{% block iscript %}{% endblock %} 
+{% endblock %}
