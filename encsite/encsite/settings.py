@@ -28,9 +28,15 @@ SECRET_KEY = os.environ['DJANGO_SECRET']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = [
+    '*',
     'http://127.0.0.1',
     'localhost'
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.ngrok-free.app/'
 ]
 
 TEMPLATE_DIRS = (

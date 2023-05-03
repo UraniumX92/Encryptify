@@ -56,7 +56,7 @@ function onSubmit(){
                     flag = false;
                 }
             };
-            let url = `${MAIN_URL}/signupcheck`;
+            let url = '/signupcheck';
             let data = {
                 'name' : name_val,
                 'email' : email_val,

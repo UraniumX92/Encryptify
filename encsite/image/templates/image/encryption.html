@@ -1,4 +1,4 @@
-{% extends 'image/img.html' %}
+{% extends 'image/forms.html' %}
 
 {% block title %} Image Encryption - Encryptify {% endblock %} 
 {% load static %}
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block form_content %} 
-<form class="img_form" action="/image/encryption" target="_self" method="post"> {% csrf_token %}
+<form class="img_form" action="/image/encryption/" method="post" enctype="multipart/form-data"> {% csrf_token %}
     <img src="#" class="mx-auto" id="imgPreview" alt="image preview" onerror="on_img_err();">
     <div class="mb-3">
         <label for="imgFileInput" class="form-label">Select an Image file</label>
@@ -17,19 +17,30 @@
     </div>
     <div class="mb-2">
         <label for="key" class="form-label">Encryption key:</label>
-        <input type="text" class="form-control" name="key" placeholder="Key" id="key" value="{{values.key}}" aria-describedby="keyHelp" required>
+        <input type="text" class="form-control" name="key" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp" required>
         <div id="keyHelp" class="form-text">Encryption key is nothing but a Password to Encrypt/Decrypt your image.</div>
     </div>
     <button type="button" class="btn btn-secondary me-auto my-1" onclick="set_random_key();"><span class="fw-bold">Generate random key</span></button>
     <button type="button" class="btn btn-secondary me-auto my-1" onclick="clear_key();"><span class="fw-bold">Clear key field</span></button>
     <div class="form-check form-switch my-1">
-        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-encrypt" value="encrypt" checked required>
+        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-encrypt" value="encrypt" checked {{values.echeck}} required>
         <label class="form-check-label" for="operation-encrypt">Encrypt</label>
     </div>
     <div class="form-check form-switch my-1">
-        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-decrypt" value="decrypt">
+        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-decrypt" value="decrypt" {{values.decheck}}>
         <label class="form-check-label" for="operation-decrypt">Decrypt</label>
     </div>
+    {% if userinfo %}
+    <div class="form-check form-switch">
+        <input class="form-check-input" name="save" type="checkbox" role="switch" id="savecheck">
+        <label class="form-check-label" for="savecheck">Save result for 7 days</label>
+    </div>
+    {% else %}
+    <div id="guest-help" class="form-text">Before using our service, make sure you read our <a class="help-text-link" href="/tos" target="_blank">Terms of Service</a> and <a class="help-text-link" href="/pp" target="_blank">Privacy Policy</a>.</div>
+    {% endif %}
+    {% if err %}
+    <div id="err" class="form-text fw-bold fs-5"> {{err}} </div>
+    {% endif %}
     <button type="submit" class="btn btn-primary ms-auto my-2 px-5"><span class="fw-bolder">Submit</span></button>
 </form>
 {% endblock %}

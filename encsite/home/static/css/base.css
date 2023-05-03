@@ -1,16 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 :root{
-    --help-text-color:rgb(200, 249, 252);
+    --help-text-color:rgb(237, 166, 255);
+    --help-text-link-color : rgb(243, 194, 255);
+    --help-text-link-color-hover : rgb(248, 225, 255);
+}
+
+.help-text-link{
+    text-decoration: none;
+    color: var(--help-text-link-color);
+}
+
+.help-text-link:hover{
+    color: var(--help-text-link-color-hover);
 }
 
 html * {
-    font-family: 'Ubuntu';
+    font-family: 'Poppins';
 }
 
 .glass_effect {
     color: white;
-    background-color: rgba(1, 62, 175, 0.2);
+    background-color: rgba(153, 0, 255, 0.25);
     backdrop-filter: blur(10px);
     box-shadow: -15px 15px 12px rgba(0,0,0, 0.35);
     cursor: default
@@ -19,6 +30,7 @@ html * {
 body {
     background: url("../img/background.jpg");
     background-size: cover;
+    background-attachment: fixed;
     background-repeat: no-repeat;
     height: auto;
     width: 99vw;
@@ -43,11 +55,25 @@ body {
     color:rgb(200, 200, 200);
 }
 
+.err-text{
+    color:rgb(248, 54, 54)
+}
+
 .navbar-brand:hover {
     cursor: default;
 }
+
+.hidden{
+    display: none;
+}
+
 .navbar-brand {
     user-select: none;
+}
+
+.dropdown-menu-dark.show{
+    color: white;
+    background-color: rgb(78, 0, 131);
 }
 
 .login-container{
@@ -56,17 +82,27 @@ body {
     justify-content: center;
 }
 
-.modal-dialog{
-    color: black;
+.modal-content{
+    color: white;
+    background-color: rgb(153, 0, 255, 0.35);
+    backdrop-filter: blur(300px);
+    box-shadow: -15px 15px 12px rgba(0,0,0, 0.35);
+    cursor: default
+}
+
+.modal-header > .btn-close{
+    background-color: var(--bs-light);
 }
 
 .modal-backdrop {
-    z-index: -1;
+    z-index: 0;
+    opacity: 0.5 !important;
 }
 
 @media (max-width:768px){
-    body{
+    /* body{
         background: url("../img/mbackground.jpg");
+        background-attachment: fixed;
         background-size: cover;
-    }
+    } */
 }

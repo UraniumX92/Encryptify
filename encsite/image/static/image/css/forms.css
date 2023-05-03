@@ -1,5 +1,5 @@
 body{
-    height: 105vh;
+    height: 110vh;
 }
 
 .form-text{
@@ -8,7 +8,7 @@ body{
 
 .form_container{
     display: flex;
-    width: 60vw;
+    width: 50vw;
     flex-direction: column;
 }
 

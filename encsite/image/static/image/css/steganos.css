@@ -1,0 +1,41 @@
+body{
+    height: 110vh;
+    background-repeat: repeat;
+}
+
+#imgPreview{
+    width: 22vw;
+    aspect-ratio: 1;
+    object-fit: contain;
+    height: auto;
+}
+
+#txtFileInput{
+    display: none;
+}
+
+.hidden{
+    display: none;
+}
+
+#btn_div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#txtArea{
+    min-height: 150px;
+    max-height: 250px;
+    resize: vertical;
+}
+
+#err{
+    color:rgb(248, 54, 54)
+}
+
+@media (max-width:768px){
+    #imgPreview{
+        width: 40vw;
+    }
+}

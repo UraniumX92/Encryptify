@@ -1,7 +1,10 @@
+import os
+import threading
 from PIL import Image
-from utils import to_even, to_odd
-import binary_utils
-import utils
+import numpy as np
+from .utils import to_even, to_odd
+from . import binary_utils
+from . import utils
 
 SIGNATURE_TEXT = utils.envs["STEG_SIGNATURE_TEXT"]
 PREFIX_TEXT = utils.envs["STEG_PREFIX_TEXT"]
@@ -9,7 +12,7 @@ PREFIX_TEXT = utils.envs["STEG_PREFIX_TEXT"]
 DEFAULT_COLOR = (0, 0, 0)
 
 
-def hide_data(img: Image.Image, message: str, key: str, enc_tup: tuple) -> Image.Image:
+def hide_data(img: Image.Image, message: str, key: str, enc_tup: tuple, cb_list:list['function'], cb_args:list[list]) -> Image.Image:
     """
     takes an image , message and key, enc_tup, encrypts the message and stores it in image, returns the stego-image
 
@@ -20,8 +23,13 @@ def hide_data(img: Image.Image, message: str, key: str, enc_tup: tuple) -> Image
     :return: PIL.Image.Image : stego image - Image which is having data hidden in it
     :raises OverflowError : if the text is too long to embed in given image
     """
+    cb1,cb2 = cb_list
+    args1,args2 = cb_args
+    th1 = threading.Thread(target=cb1,args=args1)
+    th2 = threading.Thread(target=cb2,args=args2)
     img = img.convert(mode="RGB") if img.mode != "RGB" else img
-    key = utils.get_compact_key(key)
+    e_key = utils.get_key(key)
+    key = utils.get_compact_key(key)[1:-1]
     orientation = utils.randint(0, 1)
     width, height = img.size
     ignored_pixel = (0, 0)  # because this pixel is reserved for metadata
@@ -29,10 +37,11 @@ def hide_data(img: Image.Image, message: str, key: str, enc_tup: tuple) -> Image
     tup = list(enc_tup)
     tup.insert(0, orientation)
     enc_tup = tuple(tup)
+    # Start of process
+    th1.start()
     put_enc_tup(img, enc_tup)
     # Add signature text after encryption to detect the key while extracting the data from image
     message = f"{SIGNATURE_TEXT} {message} {SIGNATURE_TEXT}"
-    e_key = utils.get_key(f"[{key}]")
     e_msg = utils.ciph(message, e_key)
     # prefixing with prefix text after encrypting text to test the encoding
     e_msg = f"{PREFIX_TEXT}{e_msg}"
@@ -44,8 +53,7 @@ def hide_data(img: Image.Image, message: str, key: str, enc_tup: tuple) -> Image
 
     if required_pixels > (height * width):
         # given image is not sufficient to store the amount of data provided
-        raise OverflowError(
-            "Text too long to embed in given image, reduce the length of your text or choose an image which is larger")
+        raise OverflowError("Text too long to embed in given image, reduce the length of your text or choose an image which is larger")
 
     i, j = (0, 0)
     # temp variables for i,j to remember the last known co-ordinates
@@ -126,11 +134,13 @@ def hide_data(img: Image.Image, message: str, key: str, enc_tup: tuple) -> Image
                 j += 1
             i += 1
             j = 0
-
+    # End of process
+    th2.start()
+    th2.join()
     return img
 
 
-def extract_data(img: Image.Image) -> str:
+def extract_data(img: Image.Image, cb_list:list['function'], cb_args:list[list]) -> str:
     """
     Takes an Image object and checks if the given image is encoded using Steganos or not
     if image is not encoded by Steganos, then raises the exception `TypeError`
@@ -141,6 +151,9 @@ def extract_data(img: Image.Image) -> str:
     :return: str : extracted data if image is encoded by Steganos
     :raises TypeError if the given image `img` is not encoded by Steganos tool
     """
+    cb1,cb2 = cb_list
+    args1,args2 = cb_args
+    th1 = threading.Thread(target=cb1,args=args1)
     img = img.convert(mode="RGB") if img.mode != "RGB" else img
     text = ''
     width, height = img.size
@@ -152,6 +165,8 @@ def extract_data(img: Image.Image) -> str:
         raise TypeError("Given image is not encoded by Steganos, code 1")
 
     orientation, sec_level, lvl = enc_tup
+    # Start of process
+    th1.start()
     i, j = 0, 0
     ti, tj = None, None
     if sec_level == 0:
@@ -224,13 +239,21 @@ def extract_data(img: Image.Image) -> str:
     pfx = rawtxt[:len(PREFIX_TEXT)]
     if pfx != PREFIX_TEXT:
         raise TypeError("Given image is not encoded by Steganos, code 2")
+    # End of process
     text = rawtxt.split(PREFIX_TEXT)[1]
     if key:
         key = utils.get_key(f"[{key}]")
+        args2.append({'protected':False})
+        th2 = threading.Thread(target=cb2, args=args2)
+        th2.start()
+        th2.join()
         return utils.deciph(text, key)
     else:
+        args2.append({'protected':True})
+        th2 = threading.Thread(target=cb2, args=args2)
+        th2.start()
+        th2.join()
         return text
-
 
 def get_enc_tup(img: Image.Image) -> tuple:
     """
@@ -336,7 +359,48 @@ def get_resized_dimensions(img: Image.Image, max_size: int) -> tuple[int]:
             stup[i] = max_size
     return tuple(stup)
 
+def save_after(action, action_args, thr_to_join:threading.Thread, job:"django.db.models.Model", fpaths:dict, tpaths:dict):
+    thr_to_join.join()
+    if action== 'encrypt':
+        tipath = tpaths["img"]
+        fipath = fpaths["img"]
+        ttpath = tpaths["txt"]
+        stg_txt = utils.read_bytes(ttpath)
+        img = Image.open(tipath)
+        action_args.insert(0, img)
+        action_args.insert(1,stg_txt)
+        try:
+            img = hide_data(*action_args)
+            img.save(fipath,format="PNG")
+            job.result_saved = True
+            job.save()
+        except OverflowError as err:
+            j_errs = job.errs.copy()
+            j_errs["OverflowError"] = err.args[0]
+            job.errs = j_errs
+            job.save()
+        finally:
+            os.remove(tipath)
+            os.remove(ttpath)
+    else:
+        tipath = tpaths["img"]
+        ftpath = fpaths["txt"]
+        img = Image.open(tipath)
+        action_args.insert(0,img)
+        try:
+            etxt = extract_data(*action_args)
+            utils.write_bytes(ftpath,etxt)
+            job.result_saved = True
+            job.save()
+        except TypeError as err:
+            j_errs = job.errs.copy()
+            j_errs["TypeError"] = err.args[0]
+            job.errs = j_errs
+            job.save()
+        finally:
+            os.remove(tipath)
 
+legend = \
 """
     Basic structure and legend:
 
@@ -350,7 +414,3 @@ def get_resized_dimensions(img: Image.Image, max_size: int) -> tuple[int]:
         (1,0) : Key is not included in image, user will have to provide key, this key will be used to decrypt the extracted text  
         (1,1) : key is not included in image, user will have to provide key, this key will be used to decrypt the extracted text, but in this case only the correct key will be accepted 
 """
-
-if __name__ == '__main__':
-    print(SIGNATURE_TEXT)
-    print(PREFIX_TEXT)

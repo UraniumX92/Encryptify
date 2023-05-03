@@ -1,15 +1,19 @@
+from django.core.files.uploadedfile import \
+    InMemoryUploadedFile,\
+    SimpleUploadedFile,\
+    TemporaryUploadedFile
+from django.utils import timezone
 from datetime import datetime
 from functools import reduce
+import threading
 import numpy as np
 import random
-import binary_utils
 import json
 import os
+from . import binary_utils
 from dotenv import load_dotenv
 load_dotenv()
-
 envs = os.environ
-
 bullet_char = "\u2022"
 
 
@@ -21,13 +25,39 @@ ascii_values = generate_ascii_values()
 ascii_len = len(ascii_values)
 # ----------------------------------- #
 
-def timenow():
+def randint(start,end):
+    return random.randint(start,end)
+
+def timenow(ts=True):
     """
     Current timestamp
     :return: float - timestamp
     """
-    return datetime.now().timestamp()
+    t = datetime.now(tz=timezone.utc)
+    return t.timestamp() if ts else t
 
+def read_bytes(filename,encoding='utf-16'):
+    with open(filename,'rb') as f:
+        return f.read().decode(encoding)
+
+def write_bytes(filename,data,encoding='utf-16'):
+    with open(filename,'wb') as f:
+        f.write(data.encode(encoding))
+
+def add_time_ts(ts,days=0):
+    """
+    Adds time to given ts and returns the resultant timestamp
+
+    :param ts:
+    :param days:
+    :param hours:
+    :param minutes:
+    :return: int
+    """
+    minute = 60
+    hour = minute*60
+    day = hour * 24
+    return (ts + (days*day))
 
 def random_KeyGen(keylen: int) -> list[int]:
     return random.sample(range(256), keylen, counts=[2 for x in range(256)])
@@ -105,6 +135,14 @@ def deciph(text: str, key: list) -> str:
     return deciphered_text
 
 
+def memory_to_simple_file(mfile):
+    if isinstance(mfile,TemporaryUploadedFile):
+        mfile.file.close_called = True
+    elif isinstance(mfile,InMemoryUploadedFile):
+        mfile = SimpleUploadedFile(mfile.name,mfile.read(),mfile.content_type)
+    return mfile
+
+
 def dump_json(object, filename):
     with open(filename, "w") as dump:
         json.dump(object, dump, indent=4)
@@ -146,7 +184,7 @@ def get_key(strval:str) -> list[int]:
     return k
 
 
-def get_compact_key(strval: str) -> str:
+def get_compact_key(strval: str,strip=False) -> str:
     """
     takes a string, converts it into a list of ints using get_key(),
     then converts this list into string with no spaces and removes the square brackets and returns it
@@ -341,6 +379,37 @@ def get_size_from_tuple(tup:tuple) -> int:
     b24bit = "".join(btup)
     return binary_utils.binary_to_decimal(b24bit)
 
+def cb_start_job_time(job):
+    job.started_at = timenow(ts=False)
+    job.save()
+
+def cb_finish_job_time(job,expiry_days,protected_dict:dict=None):
+    tnow = timenow(ts=False)
+    job.finished_at = tnow
+    job.expires_at = datetime.fromtimestamp(add_time_ts(tnow.timestamp(),days=expiry_days),tz=timezone.utc)
+    if protected_dict:
+        job.protected = protected_dict['protected']
+    job.save()
+
+def steg_helper_thread_enc(img,text:str,pdict):
+    ipath = pdict["img"]
+    img.save(ipath,"PNG")
+    tpath = pdict["txt"]
+    print('---------------- st',text.count('\n'))
+    write_bytes(tpath,text)
+    data = read_bytes(tpath)
+    print('---------------- end',data.count('\n'))
+
+    # with open(tpath,'w') as f:
+    #     print('------------- **',text.count('\n'))
+    #     f.write(text)
+    # with open(tpath,'r') as r:
+    #     data = r.read()
+    #     print('------------- after ',data.count('\n'))
+
+
+def steg_helper_thread_dec(img,path):
+    img.save(path,"PNG")
 
 if __name__ == '__main__':
     arr = [x for x in range(38024)]

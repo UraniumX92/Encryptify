@@ -13,6 +13,10 @@ function show_hide(){
     }
 }
 
+function lgcheck(){
+    return confirm("Are you sure you want to logout?");
+}
+
 // write ajax requests
 
 function onSubmit(){
@@ -31,7 +35,7 @@ function onSubmit(){
             flag = false;
         }
     }
-    let url = `${MAIN_URL}/logincheck`;
+    let url = '/logincheck';
     let body = object_to_URI_string({
         'email' : email,
         'password' : password

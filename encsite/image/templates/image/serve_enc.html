@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %} {{title}} {% endblock title %}
+
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static '/image/css/serve_enc.css' %}">
+{% endblock style %}
+
+{% block content %}
+<div id="info-container" class="glass_effect rounded-5 mx-auto my-3 p-3">
+    <input type="hidden" id="job_data" data-job-id="{{job_id}}">
+    <p id="info_text" class="fw-bold fs-4 mx-auto"> {{job_info}} </p>
+    <img src="{{isrc}}" class="mx-auto" alt="Please wait as the image loads" id="job_image" onerror="on_img_err()">
+    <div id="btn-container">
+        <button data-bs-toggle="modal" data-bs-target="#info-modal" class="btn btn-primary mx-auto my-1">Show details</button>
+        <a id="download-btn" href="#" target="_blank" class="btn btn-success mx-auto my-1">Download Image</a>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static '/image/js/serve_enc.js' %}"></script>
+{% endblock script %}
+
+{% block modals %}
+{% comment %} Modal containing job info here {% endcomment %}
+<div class="modal fade" id="info-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="info-modal-h">Task Status</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="info-modal-content" class="modal-body modal_text">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

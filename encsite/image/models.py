@@ -6,18 +6,42 @@ class ImageJob(models.Model):
     name = models.CharField(max_length=50)
     operation = models.CharField(max_length=7)
     save_job = models.BooleanField(default=False)
-    state = models.IntegerField()
-    user_name = models.CharField(max_length=100)
+    user_name = models.CharField(max_length=100,null=True)
     user_id = models.CharField(max_length=120)
-    started_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True,blank=True)
     finished_at = models.DateTimeField(null=True,blank=True)
     expires_at = models.DateTimeField(null=True,blank=True)
+    visited = models.BooleanField(default=False)
+    result_saved = models.BooleanField(default=False)
+    protected = models.BooleanField(default=False)
+    errs = models.JSONField(default=dict,null=True,blank=True) #to store error messages if there are any
 
-    def state(self):
-        return f"Finished" if self.finished_at else "Processing"
+    def status(self):
+        return "Finished" if self.result_saved else "Processing"
+
+    def dict(self):
+        started_at = self.started_at.timestamp() if self.started_at else None
+        finished_at = self.finished_at.timestamp() if self.finished_at else None
+        expires_at = self.expires_at.timestamp() if self.expires_at else None
+        return {
+            'id' : self.id,
+            'name' : self.name,
+            'operation' : self.operation,
+            'save_job' : self.save_job,
+            'user_name' : self.user_name,
+            'user_id' : self.user_id,
+            'started_at' : started_at,
+            'finished_at' : finished_at,
+            'expires_at' : expires_at,
+            'visited' : self.visited,
+            'result_saved' : self.result_saved,
+            'protected' : self.protected,
+            'errs'   : self.errs,
+            'time_taken' : self.processing_time_str()
+        }
 
     def processing_time(self):
-        if self.state() == "Finished":
+        if self.status() == "Finished":
             tstart = self.started_at.timestamp()
             tfinished = self.finished_at.timestamp()
             return tfinished-tstart
@@ -34,15 +58,18 @@ class ImageJob(models.Model):
 
     def __str__(self):
         dt_format = "(%d/%b/%Y - %I:%M:%S %p %Z)"
-        tstarted = self.started_at.strftime(dt_format)
-        return f"{self.id} - {self.user_name} - {self.name} - {tstarted} - {self.state()}"
+        if self.started_at:
+            tstarted = self.started_at.strftime(dt_format)
+        else:
+            tstarted = "not started"
+        return f"{self.id} - {self.user_name} - {self.name} - {tstarted} - {self.status()}"
 
 
 def get_duration_str(ts):
     second = 1
     minute = second*60
     temp_ts = ts
-    ms = f"{(temp_ts - int(temp_ts)):.10f}".split('.')[1]
+    ms = f"{(temp_ts - int(temp_ts)):.4f}".split('.')[1]
     time_tup = [0,0]
     duration_str = ''
     while temp_ts>=second:

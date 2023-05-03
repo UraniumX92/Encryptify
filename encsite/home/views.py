@@ -2,6 +2,7 @@
 Home Views Configuration
 """
 import random
+import multiprocessing
 from datetime import datetime
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -13,10 +14,10 @@ from .models import User
 from . import utils
 import json
 
-# temp
-from image.models import ImageJob
-
 hasher = PasswordHasher()
+
+# task_process = multiprocessing.Process(target=utils.test_task,args=['anything'])
+# task_process.start()
 
 def index(req:WSGIRequest):
     uinfo = req.session.get('userinfo')
@@ -60,15 +61,19 @@ def signup(req:WSGIRequest):
                     'email' : email,
                 }
                 return redirect('home')
-            except ValidationError as e:
-                err_msg = dict(e)['email'][0]
-                params = {
-                    'values' : {
-                        'email' : email
-                    },
-                    'err' : err_msg
-                }
-                return render(req,'signup.html',params)
+            except ValidationError as error:
+                err_dict = dict(error)
+                err_msg = err_dict.get('email')
+                if err_msg:
+                    params = {
+                        'values' : {
+                            'email' : email
+                        },
+                        'err' : err_msg
+                    }
+                    return render(req,'signup.html',params)
+                else:
+                    raise error
         else:
             params = {
                 'values':{
@@ -110,7 +115,7 @@ def login(req:WSGIRequest):
         return render(req,'login.html')
 
 def logout(req:WSGIRequest):
-    del req.session['userinfo']
+    req.session.flush()
     return redirect('home')
 
 # Json responses

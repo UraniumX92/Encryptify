@@ -3,6 +3,10 @@ function get_file(file_input){
     return ifile;
 }
 
+function get_file_type(file){
+    return file.type || 'unknown';
+}
+
 function get_file_preview_url(file_input){
     var ifile = get_file(file_input);
     if (ifile){

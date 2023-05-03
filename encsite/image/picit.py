@@ -1,5 +1,7 @@
 from PIL import Image
+import numpy as np
 import utils
+
 
 DEFAULT_COLOR = (0, 0, 0)
 MAX_PIXEL_LIMIT = 2360
@@ -156,10 +158,11 @@ def hide_data(message: str, key: list, enc_strictnes: tuple) -> Image.Image:
         i += 1
     # putting the initial co-ordinates of text in (0,n)
     img.putpixel(map_to_pixel['txtco-ord'], tctup)
+    img = scrambler(img,key)
     return img
 
 
-def check_img(img: Image.Image) -> Image.Image:
+def check_img(img: Image.Image,key:list) -> Image.Image:
     """
     Takes an Image object and checks if the given image is encoded using PicIt or not
     if image is not encoded by PicIt, then raises the exception `TypeError`
@@ -184,10 +187,14 @@ def check_img(img: Image.Image) -> Image.Image:
     }
     # checking if the encryption strictness tuples are present in image or not,
     # there is chance that image can be rotated sometimes, so we also check by rotating the image
+
+    img = unscrambler(img,key)
     p01, p10 = img.getpixel(map_to_pixel['encstrict'][0]), img.getpixel(map_to_pixel['encstrict'][1])
     for i in range(3):
         if p01 != p10:
+            img = scrambler(img,key)
             img = img.rotate(angle=90)
+            img = unscrambler(img,key)
             p01, p10 = img.getpixel(map_to_pixel['encstrict'][0]), img.getpixel(map_to_pixel['encstrict'][1])
         else:
             break
@@ -336,7 +343,53 @@ def get_enc_tup(img: Image.Image) -> tuple:
     img = check_img(img)
     return img.getpixel((1, 0))
 
+def img_to_array(img:Image.Image):
+    """
+    Takes an image and returns it's rgb values as array
 
+    :param img: PIL.Image.Image
+    :return: np.ndarray
+    """
+    return np.array(img).flatten()
+
+def array_to_img(imgarr:np.ndarray, height:int, width:int):
+    """
+    Takes array of rgb values and creates an image using the values and returns it
+
+    :param img_list : np.ndarray
+    :return: PIL.Image.Image
+    """
+    return Image.fromarray(imgarr.reshape((height, width, 3)), "RGB")
+
+def scrambler(img,key) -> Image.Image:
+    """
+    Takes an image and scrambles it and returns the scrambled image
+    (this function is inverse of unscrambler(img) function)
+    :param img:
+    :return: PIL.Image.Image
+    """
+    w,h = img.size
+    data = img_to_array(img)
+    seed = utils.get_seed(key[::-1])
+    data = utils.scramble(data,seed)
+    return array_to_img(data, height=h, width=w)
+
+
+def unscrambler(img,key) -> Image.Image:
+    """
+    Takes an image and performs inverse of scrambling algorithm
+    i.e unscrambles the scrambled image and returns it
+    (this function is inverse of scrambler(img) function)
+    :param img:
+    :return: PIL.Image.Image
+    """
+    w,h = img.size
+    data = img_to_array(img)
+    seed = utils.get_seed(key[::-1])
+    data = utils.unscramble(data, seed)
+    return array_to_img(data, h, w)
+
+legend = \
 """
     Basic structure and legend:
 
@@ -345,11 +398,8 @@ def get_enc_tup(img: Image.Image) -> tuple:
     (n,0) --> length of key
     (n,n) --> Initial co-ordinates of key
     (0,1) and (1,0) --> strictness of encryption
-    total 6
+    total: 6
     middle element of key co-ordinates pixel decides if encoding is horizontal or vertical
     0 - vertical
     1 - horizontal
 """
-if __name__ == '__main__':
-    print(SIGNATURE_TEXT)
-    print(sgt_list)

@@ -1,0 +1,184 @@
+{% extends 'image/forms.html' %}
+
+{% block title %} Image Steganography - Encryptify {% endblock %}
+{% load static %}
+{% block form_title %} Image Steganography {% endblock %}
+
+{% block istyle %}
+<link rel="stylesheet" href="{% static '/image/css/steganos.css' %}">
+{% endblock %}
+
+{% block form_content %}
+<form class="img_form" action="/image/steganos/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+    <img src="#" class="mx-auto" id="imgPreview" alt="image preview" onerror="on_img_err();">
+    <div class="mb-2">
+        <label for="imgFileInput" id="imgLabel" class="form-label fw-bold">Select an Image file</label>
+        <input class="form-control" type="file" accept="image/*" name="imgFile" id="imgFileInput" required>
+    </div>
+    <hr class="my-1 op-encrypt">
+    <div class="mb-2 op-encrypt">
+        <button type="button" class="btn btn-outline-light rounded-4 me-auto my-1" id="txt-inp-btn">Select a file to Import it's text</button>
+        <input class="form-control" type="file" name="txtFile" id="txtFileInput">
+    </div>
+    <div class="mb-2 op-encrypt">
+        <label for="txtArea" class="form-label fw-bold">Text to hide</label>
+        <textarea class="form-control" name="text" placeholder="Enter your text here" value="{{values.text}}" id="txtArea"></textarea>
+    </div>
+    <div class="mb-2 op-encrypt">
+        <label for="key" class="form-label fw-bold">Encryption key:</label>
+        <input type="text" class="form-control" name="key" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp">
+        <div id="keyHelp" class="form-text">Encryption key is nothing but a Password to Encrypt/Decrypt your image.</div>
+    </div>
+    <div class="form-check form-switch op-encrypt">
+        <input class="form-check-input" name="pass-protected" type="checkbox" role="switch" id="pass-check">
+        <label class="form-check-label" for="pass-check">Add password protection</label>
+    </div>
+    <button type="button" class="btn btn-secondary me-auto my-1 op-encrypt" onclick="set_random_key();"><span class="fw-bold">Generate random key</span></button>
+    <button type="button" class="btn btn-secondary me-auto my-1 op-encrypt" onclick="clear_key();"><span class="fw-bold">Clear key field</span></button>
+    <hr class="my-1">
+    <div class="form-check form-switch my-1">
+        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-encrypt" value="encrypt" checked {{values.echeck}} required>
+        <label class="form-check-label" for="operation-encrypt">Hide text in image</label>
+    </div>
+    <div class="form-check form-switch my-1">
+        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-decrypt" value="decrypt" {{values.decheck}}>
+        <label class="form-check-label" for="operation-decrypt">Extract text from image</label>
+    </div>
+    {% if userinfo %}
+    <div class="form-check form-switch">
+        <input class="form-check-input" name="save" type="checkbox" role="switch" id="savecheck">
+        <label class="form-check-label" for="savecheck">Save result for 7 days</label>
+    </div>
+    {% else %}
+    <div id="guest-help" class="form-text">Before using our service, make sure you read our <a class="help-text-link" href="/tos" target="_blank">Terms of Service</a> and <a class="help-text-link" href="/pp" target="_blank">Privacy Policy</a>.</div>
+    {% endif %}
+    <button type="button" class="btn btn-primary me-auto my-1" data-bs-toggle="modal" data-bs-target="#how-to-modal">How to use?</button>
+    {% if err %}
+    <div id="err" class="form-text fw-bold fs-5"> {{err}} </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary ms-auto my-2 px-5"><span class="fw-bolder">Submit</span></button>
+    <button type="button" id="hidden-ftype-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#ftype-modal"></button>
+    <button type="button" id="hidden-alert-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#alert-modal"></button>
+    <button type="button" id="hidden-img-err-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#img-err-modal"></button>
+</form>
+{% endblock %}
+
+{% block iscript %}
+<script src="{% static '/image/js/steganos.js' %}"></script>
+{% endblock %}
+
+{% block modals %}
+{% comment %} Modal containing job info here {% endcomment %}
+<div class="modal fade" id="ftype-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="ftype-modal-h">Error!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="ftype-modal-content" class="modal-body modal_text">
+                <p>
+                    <span class="fs-5">
+                        It appears that you have not chosen a text file<br>
+                        If you believe you have chosen a text file, please click the "Force
+                            import" button.<br>
+                        If not, you may close this dialogue
+                    </span><br><br>
+                    <span class="text-warning fw-bold">Note : </span>
+                    <span class="text-warning">
+                        Keep in mind that forcing your browser to treat non-text files as text will only cause it to lag
+                        or become unresponsive.
+                    </span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="force-import-btn" class="btn btn-danger" data-bs-dismiss="modal">Force import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="alert-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="alert-modal-h">Alert</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="alert-modal-content" class="modal-body modal_text">
+                <p class="fs-5">
+                    Gotcha!! you are trying to fiddle with the site here 🙃 <br>
+                    Nice Try! 🙂
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="img-err-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="img-err-modal-h">Alert</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="img-err-modal-content" class="modal-body modal_text">
+                <p class="fs-5">
+                    Please select a static image file.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="how-to-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold text-info" id="how-to-modal-h">Instructions to use Image Steganography</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="how-to-modal-content" class="modal-body modal_text">
+                <p class="fs-5">
+                    <span class="fs-3 fw-bold text-info">Image Steganography :</span> <br>
+
+                    Image steganography is the technique of hiding secret information within an image. This is done by
+                    manipulating the least significant bits of the pixel values in the image to encode the secret
+                    information. The resulting image looks no different from the original image, but the hidden message
+                    can be retrieved by a recipient who knows how to extract it. <br><br>
+
+                    <span class="fs-3 fw-bold text-info">Instructions for using Image Steganography :</span> <br>
+                    To hide text within an image, make sure the number of characters of text does not exceed the value
+                    of (no. of pixels in image / 3), i.e., each character takes up 3 pixels. This ensures that the
+                    hidden text can be fully encoded into the image without any loss of information. <br><br>
+
+                    <span class="text-light">
+                        Our Image Steganography feature also includes an option to add password protection. If this option
+                        is disabled, then the text can be extracted from the image without a password or encryption key.
+                        However, if you enable this option, then you or anyone trying to extract the text from the image
+                        will be required to enter a password or encryption key to access the extracted text. Without the
+                        correct password or key, the text will not be provided.
+                    </span><br><br>
+
+                    <span class="text-warning">
+                        We take your privacy seriously and do not access or share any of the information or data that you
+                        hide within the image. All of your hidden data remains securely encrypted and protected within the
+                        image itself which is stored at our server.
+                    </span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

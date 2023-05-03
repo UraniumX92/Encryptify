@@ -1,6 +1,16 @@
 #imgPreview{
-    width: 20vw;
+    width: 22vw;
+    aspect-ratio: 1;
+    object-fit: contain;
     height: auto;
+}
+
+#savecheck-hidden{
+    display: none;
+}
+
+#err{
+    color:rgb(248, 54, 54)
 }
 
 @media (max-width:768px){

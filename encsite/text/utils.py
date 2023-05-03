@@ -11,6 +11,22 @@ def timenow():
     """
     return datetime.now().timestamp()
 
+def add_time_ts(ts,days=0,hours=0,minutes=0):
+    """
+    Adds time to given ts and returns the resultant timestamp
+
+    :param ts:
+    :param days:
+    :param hours:
+    :param minutes:
+    :return: int
+    """
+    minute = 60
+    hour = minute*60
+    day = hour * 24
+    return (ts + (days*day) + (hours*hour) + (minutes*minute))
+
+
 def key_mod(key:list) -> list:
     """
     Modifies the given key before using it for encryption/decryption

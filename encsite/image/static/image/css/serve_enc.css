@@ -1,0 +1,66 @@
+body {
+    height: 110vh;
+}
+
+#info-text{
+    margin-left: 15vw;
+    margin-right: 15vw;
+}
+
+#job_image{
+    width: 35vw;
+    aspect-ratio: 1;
+    object-fit: contain;
+    height: auto;
+}
+
+#info-text{
+    margin-left: 15vw;
+    margin-right: 15vw;
+}
+
+#info-container{
+    display: flex;
+    flex-direction: column;
+    width: 95vw;
+    margin-top: 15vh;
+    justify-content: center;
+}
+
+#btn-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+}
+
+#err{
+    color:rgb(248, 54, 54)
+}
+
+@media (max-width:768px){
+    #job_image{
+        width: 70vw;
+    }
+}
+
+/* 
+
+{
+    "status": 200, 
+    "message": "Finished", 
+    "job_info": {
+        "id": 24, 
+        "name": "encrypt", 
+        "operation": "encrypt", 
+        "save_job": true, 
+        "user_name": "Tester", 
+        "user_id": "O196F8H16955A1C8f4D1R7OI8iwxpgXbuYvaom4vWkfWdgwXMYwds", 
+        "started_at": 1681998797.0, 
+        "finished_at": 1682274864.0, 
+        "expires_at": 1682583798.0, 
+        "time_taken": "4601 minute(s) and 7.0000000000 seconds"
+    }
+}
+
+ */

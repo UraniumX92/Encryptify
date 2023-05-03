@@ -35,6 +35,13 @@ def create_uid(hash):
         hi += 1
     return uid
 
+import time
+def test_task(*args,**kwargs):
+    while True:
+        for i in range(100):
+            print(i)
+        time.sleep(10)
+
 if __name__ == '__main__':
     print("hash :")
     h = input()

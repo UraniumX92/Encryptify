@@ -1,8 +1,9 @@
 from PIL import Image
-import numpy as np
 from itertools import chain
-import utils
-
+import threading
+import numpy as np
+from . import utils
+import os
 
 def xor_img_data(img_arr:np.ndarray, key:list) -> list:
     """
@@ -39,38 +40,75 @@ def array_to_img(imgarr:np.ndarray, height:int, width:int):
     """
     return Image.fromarray(imgarr.reshape((height, width, 3)), "RGB")
 
-def encrypt_image(img:Image.Image,key:str="") -> Image.Image:
+def encrypt_image(img:Image.Image,key:str,thread_cb_list:list['function'],cb_args:list[list]) -> Image.Image:
     """
     Takes an image and key and encrypts the image using key and returns the encrypted image
 
     :param img: PIL.Image.Image - Image to be encrypted
+    :param key: encryption key
+    :param thread_cb_list: list of callback functions (exactly 2 functions should be passed in this list)
+    :param cb_args: list of list where inner list contains params to pass in callbacks
     :return: PIL.Image.Image - Encrypted image
     """
+    cb1, cb2 = thread_cb_list
+    args1, args2 = cb_args
+    th1 = threading.Thread(target=cb1, args=args1)
+    th2 = threading.Thread(target=cb2, args=args2)
     key = utils.get_key(key)
     img = img.convert(mode="RGB") if img.mode != "RGB" else img
     width , height = img.size
+    th1.start()
     img_data = img_to_array(scrambler(img, key))
     xored = xor_img_data(img_data,key)
     nimg = array_to_img(xored, height, width)
+    th2.start()
+    th2.join()
     return nimg
 
-def decrypt_image(img:Image.Image,key:str) -> Image.Image:
+def decrypt_image(img:Image.Image,key:str,thread_cb_list:list['function'],cb_args:list[list]) -> Image.Image:
     """
     Takes the image and key, and decrypts the encrypted image using key and returns the decrypted image
 
     :param img: image to be decrypted
     :param key: encryption key
+    :param thread_cb_list: list of callback functions (exactly 2 functions should be passed in this list)
+    :param cb_args: list of list where inner list contains params to pass in callbacks
     :return: PIL.Image.Image - Decrypted image
     """
+    cb1,cb2 = thread_cb_list
+    args1,args2 = cb_args
+    th1 = threading.Thread(target=cb1,args=args1)
+    th2 = threading.Thread(target=cb2,args=args2)
     key = utils.get_key(key)
     img = img.convert(mode="RGB") if img.mode != "RGB" else img
     width, height = img.size
+    th1.start()
     img_data = img_to_array(img)
     xored = xor_img_data(img_data, key)
     img2 = array_to_img(xored, height=height, width=width)
     data = img_to_array(unscrambler(img2, key))
     nimg = array_to_img(data, height, width)
+    th2.start()
+    th2.join()
     return nimg
+
+def save_after(action:'function',thr_to_join:threading.Thread,action_args:list,job,spath:str,tmpath:str):
+    """
+
+    :param action:
+    :param action_args:
+    :return:
+    """
+    thr_to_join.join()
+    print(os.getcwd())
+    img = Image.open(tmpath)
+    action_args.insert(0,img)
+    rimg:Image.Image = action(*action_args)
+    rimg.save(spath,format="PNG")
+    job.result_saved = True
+    job.save()
+    os.remove(tmpath)
+
 
 def resizer(img:Image.Image,max_size:int) -> Image.Image:
     """
@@ -119,8 +157,8 @@ def p_scram(img:Image.Image,key):
     seed = utils.get_seed(key[::-1])
     scram = utils.scramble(pdata,seed)
     scram = scram.reshape((img.height,img.width,3))
-    nimg = Image.fromarray(scram,"RGB")
-    return nimg
+    return Image.fromarray(scram,"RGB")
+
 
 def p_unscram(img:Image.Image,key):
     pdata = np.array(img)
@@ -128,8 +166,8 @@ def p_unscram(img:Image.Image,key):
     seed = utils.get_seed(key[::-1])
     unscram = utils.unscramble(pdata,seed)
     unscram = unscram.reshape((img.height,img.width,3))
-    nimg = Image.fromarray(unscram,"RGB")
-    return nimg
+    return Image.fromarray(unscram,"RGB")
+
 
 # def pixel_scrambler(img,key):
 #     hscram = p_scram(img, key)
@@ -144,52 +182,3 @@ def p_unscram(img:Image.Image,key):
 #     vuscram = vuscram.rotate(-90, expand=True)
 #     huscram = p_unscram(vuscram, key)
 #     return huscram
-
-if __name__ == '__main__':
-    key = utils.get_key(input("Enter key: "))
-    car = Image.open("car.png")
-    fruit = Image.open("fruit.jpg")
-    inp = '1'
-
-    t1 = utils.timenow()
-    cs = p_scram(car, key)
-    t2 = utils.timenow()
-    print(f"scram car: {t2-t1}")
-
-    t1 = utils.timenow()
-    fs = p_scram(fruit, key)
-    t2 = utils.timenow()
-    print(f"scram fruit: {t2-t1}")
-
-    t1 = utils.timenow()
-    cu = p_unscram(cs, key)
-    t2 = utils.timenow()
-    print(f"unscram car: {t2-t1}")
-
-    t1 = utils.timenow()
-    fu = p_unscram(fs, key)
-    t2 = utils.timenow()
-    print(f"unscram fruit: {t2-t1}")
-    while inp=='1':
-        img = input("1.car\n2.fruit\n: ")
-        state = input("1.scrambled\n2.unscrambled\n: ")
-        match img,state:
-            case '1','1':
-                cs.show()
-            case '1','2':
-                cu.show()
-            case '2','1':
-                fs.show()
-            case '2','2':
-                fu.show()
-            case _:
-                pass
-        inp = input("1.Continue\n2.Exit\n: ")
-        if inp=='1':
-            option = input("Enter // for same key, else new key: ")
-            if option!='//':
-                key = utils.get_key(option)
-                if input('1.us car\n2.us fruit\n: ')=='1':
-                    p_unscram(cs, key).show()
-                else:
-                    p_unscram(fs, key).show()

@@ -1,4 +1,9 @@
 **/__pycache__/
+/encsite/image/jobs/encryption/*
+/encsite/image/jobs/steganos/stego_images/*
+/encsite/image/jobs/steganos/stego_texts/*
+/encsite/image/jobs/picit/picit_images/*
+/encsite/image/jobs/picit/picit_texts/*
 /.idea/
 encsite/db.sqlite3
 .env

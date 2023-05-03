@@ -1,19 +1,5 @@
-.glass_effect {
-    color: white;
-    background-color: rgba(1, 62, 175, 0.2);
-    backdrop-filter: blur(10px);
-    box-shadow: -15px 15px 12px rgba(0,0,0, 0.35);
-    cursor: default
-}
-
 body {
-    background-color: rgb(19, 27, 100);
-    background: url("../img/background.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    position: relative;
-    height: 120vh;
-    width: 99vw;
+    height: 110vh;
 }
 
 .login-container{
@@ -46,10 +32,6 @@ body {
 }
 
 @media (max-width:768px){
-    body{
-        background: url("../img/mbackground.jpg");
-        background-size: cover;
-    }
     .login-container{
         width: 90vw;
         margin-top: 10vh;

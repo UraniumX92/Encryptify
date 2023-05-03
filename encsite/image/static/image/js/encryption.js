@@ -13,13 +13,17 @@ img_input.onchange = (e) => {
     }
 }
 
+window.onload = (e)=>{
+    img_input.onchange(e);
+}
+
 function set_random_key(){
-    key_input.value = JSON.stringify(get_random_key(30)).replace(" ","");
+    let rkey = get_random_key(30);
+    key_input.value = JSON.stringify(rkey).replace(" ","");
 }
 
 function clear_key(){
     key_input.value = '';
-    key_input.focus();
 }
 
 function on_img_err(){

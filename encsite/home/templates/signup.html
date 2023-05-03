@@ -11,10 +11,11 @@
 {% block signupactive %}active{% endblock signupactive %}
 
 {% block content %}
+<div id="hidden-div">
 <div class="signup-container glass_effect rounded-5 mx-auto p-3">
     <form action="/signup" id="signup-form" method="post" onsubmit="return onSubmit()"> {% csrf_token %}
         <div class="input-container">
-            <h2 class="mx-auto">Sign up</h2>
+            <h1 class="mx-auto fw-bold">Sign up</h1>
             <div class="mb-2">
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" placeholder="Your Email" name="email" id="email"
@@ -60,6 +61,7 @@
             </div>
     </form>
 </div>
+</div>
 {% endblock content %}
 
 {% block script %}
@@ -68,7 +70,7 @@
 
 {% block modals %}
 <div class="modal fade" id="tos_modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="tos_header" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-2 fw-bold" id="tos_header">Terms of Service</h1>
@@ -94,14 +96,15 @@
                     limited to text, graphics, logos, images, and software, are the property of Encryptify or its
                     licensors and are protected by intellectual property laws.<br><br>
 
-                    <span class="fw-bold">File Encryption:</span> When you use our file encryption service, you agree to upload your files to our
+                    <span class="fw-bold">File Encryption:</span> When you use our encryption service, you agree to upload your files to our
                     server for encryption. We store your encrypted files on our server for a limited period of time in
                     order to provide the service. We protect your files from unauthorized access and will not share them
                     with third parties, except as required by law.<br><br>
 
-                    <span class="fw-bold">File Storage:</span> If you choose to save your encrypted files on our server, we will store those files in
-                    our database with an associated user table. We will not share your files with third parties, except
-                    as required by law.<br><br>
+                    <span class="fw-bold">File Storage:</span> If you choose to save your encrypted file on our server, it will be saved for a fixed 
+                    period of 7 days and then automatically deleted from our server. We will not use, share, or access your files for any other 
+                    purpose except to provide you with our service, or as required by law. You are solely responsible for ensuring that you have 
+                    all necessary rights and permissions to use and encrypt any files you upload to our service.<br><br>
 
                     <span class="fw-bold">User Accounts:</span> We recommend that you create a user account to use our service. By creating an
                     account, you agree to provide accurate and complete information about yourself. You also agree to
@@ -143,7 +146,7 @@
     </div>
 </div>
 <div class="modal fade" id="pp_modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="pp_header" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-2 fw-bold" id="pp_header">Privacy Policy</h1>
@@ -170,9 +173,13 @@
                     server for encryption. We store your encrypted files on our server for a limited period of time in
                     order to provide the service. We do not store the original unencrypted files.<br><br>
 
-                    <span class="fw-bold">File Storage:</span> If you choose to save your encrypted files on our server, we will store those files in
-                    our database with an associated user table. We will not share your files with third parties, except
-                    as required by law.<br><br>
+                    <span class="fw-bold">Data Retention:</span> We will retain your encrypted files on our server for a fixed 
+                    period of 7 days, after which they will be automatically deleted. We will not use, share, or access your files 
+                    for any purpose other than to provide you with our service, or as required by law. We may retain non-personally 
+                    identifiable information related to your use of our service for statistical or analytical purposes. You are 
+                    responsible for ensuring that you have all necessary rights and permissions to use and encrypt any files you 
+                    upload to our service. If you would like us to delete your encrypted files before the end of the 7-day retention 
+                    period, log into your user profile page and select and remove files by yourself. <br><br>
 
                     <span class="fw-bold">Third Party Services:</span> We may use third party services to help us provide and improve our service,
                     such as hosting and payment processing services. These third parties may have access to your
@@ -181,10 +188,6 @@
                     <span class="fw-bold">Security:</span> We take reasonable measures to protect the information we collect from unauthorized
                     access, use, or disclosure. However, no method of transmission over the internet or electronic
                     storage is completely secure.<br><br>
-
-                    <span class="fw-bold">Data Retention:</span>
-                    We will retain your personal information for as long as necessary to provide our service and as
-                    required by law.<br><br>
 
                     <span class="fw-bold">Children:</span>
                     Our service is not intended for children under the age of 13. We do not knowingly collect personal

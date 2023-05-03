@@ -14,7 +14,7 @@
 <div class="login-container glass_effect rounded-5 mx-auto p-3">
     <form action="/login" method="post" onsubmit="return onSubmit()"> {% csrf_token %}
         <div class="input-container">
-            <h2 class="mx-auto">Login</h2>
+            <h1 class="mx-auto fw-bold">Login</h1>
             <div class="mb-2">
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" name="email" id="email" value="{{values.email}}" aria-describedby="emailHelp" required>
