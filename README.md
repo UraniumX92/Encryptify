@@ -1,7 +1,7 @@
 # Encryptify
 
-*Development-commit-4*
+*Development-commit-5*
 
-> Note: Changed frontend theme, created complete backend of steganos
+> Note: Improved frontend theme, built backend of text utils
 
 A text and image encryption/decryption website made using Python (Django)
