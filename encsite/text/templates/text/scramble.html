@@ -1,0 +1,17 @@
+{% extends 'text/forms.html' %}
+
+{% block util_tscr %}active{% endblock util_tscr %}
+
+{% block title %}Encryptify - Scramble Text{% endblock title %}
+
+{% load static %}
+
+{% block form_title %}Scramble{% endblock form_title %}
+
+{% block encrypt_label %}Scramble{% endblock encrypt_label %}
+{% block decrypt_label %}Unscramble{% endblock decrypt_label %}
+{% block rph_text %}Scrambled/Unscrambled text will appear here{% endblock rph_text %}
+
+{% block tscript %}
+<script src="{% static '/text/js/scramble.js' %}"></script>
+{% endblock tscript %}

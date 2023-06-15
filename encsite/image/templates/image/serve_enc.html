@@ -12,6 +12,11 @@
 <div id="info-container" class="glass_effect rounded-5 mx-auto my-3 p-3">
     <input type="hidden" id="job_data" data-job-id="{{job_id}}">
     <p id="info_text" class="fw-bold fs-4 mx-auto"> {{job_info}} </p>
+    <div id="spinner" class="d-flex align-items-center mx-auto">
+        <div class="spinner-grow text-light mx-3" role="status"></div>
+        <h4 class="fw-bold" id="buffertext">Loading...</h4>
+    </div>
+    <div class="text-warning fs-5 mx-auto" id="img-dimensions"></div>
     <img src="{{isrc}}" class="mx-auto" alt="Please wait as the image loads" id="job_image" onerror="on_img_err()">
     <div id="btn-container">
         <button data-bs-toggle="modal" data-bs-target="#info-modal" class="btn btn-primary mx-auto my-1">Show details</button>

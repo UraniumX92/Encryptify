@@ -1,5 +1,5 @@
 import numpy as np
-import utils
+from . import utils
 
 def generate_ascii_values():
     return [chr(num) for num in range(1, 256)]
@@ -99,6 +99,14 @@ def deciph(text: str, key: list) -> str:
         if i == len(key):
             i = 0
     return deciphered_text
+
+# text = "Hello this is the xor text which is not working fine"
+# keyx = utils.get_key("xorkey")
+# x = xor_text(text,keyx)
+# print("xored",x)
+# xn = xor_text(x,keyx)
+# print("unxored",xn)
+# print(xn==text)
 
 if __name__ == '__main__':
     text = input("Enter text: ")

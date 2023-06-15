@@ -6,7 +6,7 @@ class ImageJob(models.Model):
     name = models.CharField(max_length=50)
     operation = models.CharField(max_length=7)
     save_job = models.BooleanField(default=False)
-    user_name = models.CharField(max_length=100,null=True)
+    user_name = models.CharField(max_length=100,null=True,blank=True)
     user_id = models.CharField(max_length=120)
     started_at = models.DateTimeField(null=True,blank=True)
     finished_at = models.DateTimeField(null=True,blank=True)
@@ -17,7 +17,7 @@ class ImageJob(models.Model):
     errs = models.JSONField(default=dict,null=True,blank=True) #to store error messages if there are any
 
     def status(self):
-        return "Finished" if self.result_saved else "Processing"
+        return "error" if self.errs else "Finished" if self.result_saved else "Processing"
 
     def dict(self):
         started_at = self.started_at.timestamp() if self.started_at else None
@@ -25,6 +25,7 @@ class ImageJob(models.Model):
         expires_at = self.expires_at.timestamp() if self.expires_at else None
         return {
             'id' : self.id,
+            'status' : self.status(),
             'name' : self.name,
             'operation' : self.operation,
             'save_job' : self.save_job,
@@ -41,7 +42,7 @@ class ImageJob(models.Model):
         }
 
     def processing_time(self):
-        if self.status() == "Finished":
+        if self.status() == "Finished" and self.started_at and self.finished_at:
             tstart = self.started_at.timestamp()
             tfinished = self.finished_at.timestamp()
             return tfinished-tstart
@@ -58,11 +59,9 @@ class ImageJob(models.Model):
 
     def __str__(self):
         dt_format = "(%d/%b/%Y - %I:%M:%S %p %Z)"
-        if self.started_at:
-            tstarted = self.started_at.strftime(dt_format)
-        else:
-            tstarted = "not started"
-        return f"{self.id} - {self.user_name} - {self.name} - {tstarted} - {self.status()}"
+        tstarted = self.started_at.strftime(dt_format) if self.started_at else "not started"
+        name = self.user_name if self.user_name else ''
+        return f"{self.id} - {name} - {self.name} - {tstarted} - {self.status()}"
 
 
 def get_duration_str(ts):

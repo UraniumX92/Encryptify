@@ -10,15 +10,14 @@ from argon2 import PasswordHasher
 from django.core.handlers.wsgi import WSGIRequest
 from argon2.exceptions import VerifyMismatchError
 from django.core.exceptions import ValidationError
+from encsite.middlewares import update_user_last_active, login_required
 from .models import User
 from . import utils
 import json
 
 hasher = PasswordHasher()
 
-# task_process = multiprocessing.Process(target=utils.test_task,args=['anything'])
-# task_process.start()
-
+@update_user_last_active
 def index(req:WSGIRequest):
     uinfo = req.session.get('userinfo')
     if uinfo:
@@ -28,7 +27,10 @@ def index(req:WSGIRequest):
         return render(req,'index.html',params)
     return render(req,'index.html')
 
+def favicon(req):
+    return redirect('/static/img/favicon.ico')
 
+@update_user_last_active
 def signup(req:WSGIRequest):
     form = req.POST
     if form:
@@ -85,7 +87,7 @@ def signup(req:WSGIRequest):
             return render(req,'signup.html',params)
     return render(req,"signup.html")
 
-
+@update_user_last_active
 def login(req:WSGIRequest):
     form = req.POST
     if form:
@@ -114,8 +116,10 @@ def login(req:WSGIRequest):
     else:
         return render(req,'login.html')
 
+@login_required
+@update_user_last_active
 def logout(req:WSGIRequest):
-    req.session.flush()
+    del req.session['userinfo']
     return redirect('home')
 
 # Json responses
@@ -213,93 +217,3 @@ def signup_check(req:WSGIRequest, internal=False):
                 "result":"success",
                 "message": "Valid information, can proceed"
             })
-
-
-def a(req):
-    uinfo = req.session['userinfo']
-    username = uinfo['name']
-    email = uinfo['email']
-    user = User.objects.get(email=email)
-    ex = datetime.now().timestamp() + (((60*60)*24)*7)
-    ex = datetime.fromtimestamp(ex)
-    job = ImageJob(
-        name='steganos',
-        user_name=username,
-        user_id=user.id,
-        expires_at=ex,
-    )
-    job.save()
-    user.image_jobs.add(job)
-    user.save()
-    return JsonResponse({
-        'result': f'success, added image job to user \'{username}\''
-    })
-
-def redr(req):
-    p1 = random.choice(['hello','Hi','Random','Django'])
-    p2 = random.randint(100,999)
-    params = {
-        'param' : p1,
-        'param2' : p2
-    }
-    return redirect('ptest',**params)
-
-def ptest(req,param,param2):
-    return JsonResponse({
-        'result' : 'success',
-        'params' : {
-            'param' : param,
-            'type_param' : str(type(param)),
-            'param2' : param2,
-            'type_param2' : str(type(param2))
-        }
-    })
-
-def test(req:WSGIRequest):
-    uinfo = req.session['userinfo']
-    email = uinfo['email']
-    # user = User.objects.get(email=email)
-    # jobs = user.image_jobs.all()
-    # count = user.image_jobs.count()
-    # job = jobs[0]
-    # job.delete()
-    # print(jobs)
-    # print(count)
-    # jobs = user.image_jobs.all()
-    # count = user.image_jobs.count()
-    # print(jobs)
-    # print(count)
-
-    user = User.objects.get(id=uinfo['id'])
-    print('----------',user.dict(),'----------')
-    jobs = user.image_jobs.all()
-    print(user.image_jobs.count())
-    print(jobs)
-    for job in jobs:
-        print(f"{job} |||| {job.processing_time()} |||| {job.user_set.all()}")
-    # job = ImageJob.objects.get(user_id=uinfo['id'])
-    # job.delete()
-    # print(job.user_set.all()) #get user from job
-
-    # username = uinfo['name']
-    # user = User.objects.get(email=email)
-    # ex = datetime.now().timestamp() + (((60*60)*24)*7)
-    # ex = datetime.fromtimestamp(ex)
-    # job = ImageJob(
-    #     job_name='steganos',
-    #     user_name=username,
-    #     user_id=user.id,
-    #     expiry_time=ex,
-    # )
-    # job.save()
-    # user.image_jobs.add(job)
-    # user.save()
-    return JsonResponse({
-        'result' : 'success, check db'
-    })
-    # return JsonResponse({
-    #     'result' : 'Nothing in test'
-    # })
-
-# Todo: on website, mention that the only resultant images/texts will be stored in backend, the original images and texts won't be saved.
-#   make this very clear.

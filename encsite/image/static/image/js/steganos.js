@@ -12,11 +12,27 @@ const hidden_ftype_btn = document.getElementById("hidden-ftype-btn");
 const hidden_alert_btn = document.getElementById("hidden-alert-btn");
 const force_import_btn = document.getElementById("force-import-btn");
 const hidden_img_err_btn = document.getElementById("hidden-img-err-btn");
+const img_dim = document.getElementById("img-dimensions");
 let img_err_count = 0;
 let txt_file = null;
 
 enableDropFiles(txt_inp_btn,txt_input);
 enableDropFiles(txt_area,txt_input);
+key_input.ondblclick = show_hide;
+
+function on_img_err(){
+    if(img_err_count>0){
+        if (img_input.value){
+            hidden_img_err_btn.click();
+        }
+        img_input.value = '';
+    }
+    else{
+        img_err_count += 1;
+    }
+    img_preview.style.display = 'none';
+    img_dim.style.display = 'none';
+}
 
 txt_inp_btn.onclick = function (e){
     txt_input.click();
@@ -88,32 +104,15 @@ function rchange_display(e){
     }
 }
 
+img_preview.onload = function(e){
+    img_dim.style.display = 'block';
+    img_dim.innerText = `${img_preview.naturalWidth}x${img_preview.naturalHeight}`;
+}
+
 window.onload = (e)=>{
     rchange_display(e);
     img_input.onchange(e);
     for(rad of op_radios){
         rad.onchange = rchange_display;
     }
-}
-
-function set_random_key(){
-    let rkey = get_random_key(30);
-    key_input.value = JSON.stringify(rkey).replace(" ","");
-}
-
-function clear_key(){
-    key_input.value = '';
-}
-
-function on_img_err(){
-    if(img_err_count>0){
-        if (img_input.value){
-            hidden_img_err_btn.click();
-        }
-        img_input.value = '';
-    }
-    else{
-        img_err_count += 1;
-    }
-    img_preview.style.display = 'none';
 }

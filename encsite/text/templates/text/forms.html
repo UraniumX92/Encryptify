@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %} 
+{% endblock %} 
+
+{% block utactive %}tactive{% endblock utactive %}
+
+{% load static %}
+
+{% block style %} 
+<link rel="stylesheet" href="{% static '/text/css/forms.css' %}">
+{% block tstyle %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="glass_effect form_container rounded-5 mx-auto my-3 p-3">
+    <h3 id="formtitle" class="centered fw-bold">{% block form_title %} {% endblock %}</h3>
+    {% csrf_token %}
+    <div class="mb-2">
+        <input class="form-control hidden" type="file" name="txtFile" id="txtFileInput">
+        <label for="txtArea" class="form-label fw-bold">Enter your text:</label>
+        <textarea class="form-control ta-dark" name="text" placeholder="Your text here" id="txtArea"></textarea>
+        <div class="form-text text-info" id="txlen">Text length</div>
+        <div class="form-text">You can drag and drop text files in text area above.</div>
+    </div>
+    {% block key_block %}
+    <div>
+        <label for="key" class="form-label fw-bold">Encryption key:</label>
+        <input type="password" class="form-control ta-dark" name="key" autocomplete="off" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp">
+        <div class="form-text text-info">Double tap on Encryption key to show/hide its text</div>
+        <div id="keyHelp" class="form-text">Encryption key is nothing but a Password to Encrypt/Decrypt your data.</div>
+        <div class="btn-container">
+            <div class="btn-container">
+                <button type="button" class="btn btn-secondary m-1" onclick="set_random_key();"><span class="fw-bold">Generate random key</span></button>
+                <button type="button" class="btn btn-secondary m-1" onclick="clear_key();"><span class="fw-bold">Clear key field</span></button>
+            </div>
+            <div class="btn-container ms-auto">
+                <button class="btn btn-primary m-1" id="e-btn">{% block encrypt_label %}Encrypt{% endblock encrypt_label %}</button>
+                <button class="btn btn-primary m-1" id="d-btn">{% block decrypt_label %}Decrypt{% endblock decrypt_label %}</button>
+            </div>
+        </div>
+    </div>
+    {% endblock key_block %}
+    <div class="my-2">
+        <button id="import-txt-btn" role="button" class="btn btn-success d-block mx-auto mb-2">
+            Import below text
+        </button>
+        <label for="rtxtArea" class="form-label fw-bold">Result:</label>
+        <textarea class="form-control ta-dark" name="text" placeholder="{% block rph_text %}Encrypted/Decrypted text will appear here{% endblock rph_text %}" id="rtxtArea" readonly></textarea>
+        <div class="form-text text-info" id="rtxlen"></div>
+        <button id="txt-download-btn" role="button" class="btn btn-success d-block mx-auto mt-2">
+            Download text as a file
+        </button>
+    </div>
+    <button type="button" id="hidden-ftype-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#ftype-modal"></button>
+    <button id="err-modal-btn" data-bs-toggle="modal" data-bs-target="#err-modal" class="btn btn-primary hidden mx-auto my-1"></button>
+</div>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="ftype-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="ftype-modal-h">Error!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="ftype-modal-content" class="modal-body modal_text">
+                <p>
+                    <span class="fs-5">
+                        It appears that you have not chosen a text file<br>
+                        If you believe you have chosen a text file, please click the "Force
+                        import" button.<br>
+                        If not, you may close this dialogue
+                    </span><br><br>
+                    <span class="text-warning fw-bold">Note : </span>
+                    <span class="text-warning">
+                        Keep in mind that forcing your browser to treat non-text files as text will only cause it to lag
+                        or become unresponsive.
+                    </span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="force-import-btn" class="btn btn-danger" data-bs-dismiss="modal">Force
+                    import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="err-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="err-modal-h">Error!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="err-modal-content" class="modal-body">
+                <p id="err-modal-text" class="text-warning"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% block t_modals %}{% endblock t_modals %}
+{% endblock modals %}
+
+{% block script %} 
+<script src="{% static '/text/js/forms.js' %}"></script>
+{% block tscript %}{% endblock %} 
+{% endblock %}

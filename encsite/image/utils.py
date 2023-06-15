@@ -7,6 +7,7 @@ from datetime import datetime
 from functools import reduce
 import threading
 import numpy as np
+import math
 import random
 import json
 import os
@@ -97,6 +98,7 @@ def ciph(text: str, key: list) -> str:
     :param key:
     :return: str : encrypted text
     """
+    text = txt_scrambler(text,key)
     ciphered_text = ''
     i = 0
     for charx in text:
@@ -132,8 +134,38 @@ def deciph(text: str, key: list) -> str:
         i += 1
         if i == len(key):
             i = 0
+    deciphered_text = txt_unscramber(deciphered_text,key)
     return deciphered_text
 
+def txt_scrambler(text,key):
+    """
+    Takes text and key and scrambles the text based on key
+
+    :param text:
+    :param key:
+    :return:
+    """
+    arr = np.array([ord(x) for x in text])
+    seed = get_seed(key)
+    scram = scramble(arr,seed)
+    scram = [chr(x) for x in scram]
+    scram_txt = "".join(scram)
+    return scram_txt
+
+def txt_unscramber(text,key):
+    """
+    Takes text and key and unscrambles the text based on key
+
+    :param text:
+    :param key:
+    :return:
+    """
+    arr = np.array([ord(x) for x in text])
+    seed = get_seed(key)
+    unscram = unscramble(arr,seed)
+    unscram = [chr(x) for x in unscram]
+    unscram_txt = "".join(unscram)
+    return unscram_txt
 
 def memory_to_simple_file(mfile):
     if isinstance(mfile,TemporaryUploadedFile):
@@ -379,14 +411,20 @@ def get_size_from_tuple(tup:tuple) -> int:
     b24bit = "".join(btup)
     return binary_utils.binary_to_decimal(b24bit)
 
+def set_path_extension(path,ext):
+    plist = path.split('.')
+    plist[-1] = ext
+    return '.'.join(plist)
+
 def cb_start_job_time(job):
     job.started_at = timenow(ts=False)
     job.save()
 
-def cb_finish_job_time(job,expiry_days,protected_dict:dict=None):
+def cb_finish_job_time(job,expiry_days=None,protected_dict:dict=None):
     tnow = timenow(ts=False)
     job.finished_at = tnow
-    job.expires_at = datetime.fromtimestamp(add_time_ts(tnow.timestamp(),days=expiry_days),tz=timezone.utc)
+    if expiry_days:
+        job.expires_at = datetime.fromtimestamp(add_time_ts(tnow.timestamp(),days=expiry_days),tz=timezone.utc)
     if protected_dict:
         job.protected = protected_dict['protected']
     job.save()
@@ -395,21 +433,19 @@ def steg_helper_thread_enc(img,text:str,pdict):
     ipath = pdict["img"]
     img.save(ipath,"PNG")
     tpath = pdict["txt"]
-    print('---------------- st',text.count('\n'))
     write_bytes(tpath,text)
-    data = read_bytes(tpath)
-    print('---------------- end',data.count('\n'))
-
-    # with open(tpath,'w') as f:
-    #     print('------------- **',text.count('\n'))
-    #     f.write(text)
-    # with open(tpath,'r') as r:
-    #     data = r.read()
-    #     print('------------- after ',data.count('\n'))
-
 
 def steg_helper_thread_dec(img,path):
     img.save(path,"PNG")
+
+def picit_helper_thread_enc(text,path):
+    write_bytes(path,text)
+
+def picit_helper_thread_dec(img,path,job,expiry_days):
+    tnow = timenow(ts=False)
+    img.save(path,"PNG")
+    job.expires_at = datetime.fromtimestamp(add_time_ts(tnow.timestamp(), days=expiry_days), tz=timezone.utc)
+
 
 if __name__ == '__main__':
     arr = [x for x in range(38024)]

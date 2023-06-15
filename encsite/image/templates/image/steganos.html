@@ -1,8 +1,10 @@
 {% extends 'image/forms.html' %}
 
-{% block title %} Image Steganography - Encryptify {% endblock %}
+{% block util_istg %}active{% endblock %}
+
+{% block title %} Steganos - Encryptify {% endblock %}
 {% load static %}
-{% block form_title %} Image Steganography {% endblock %}
+{% block form_title %} Steganos : Image Steganography {% endblock %}
 
 {% block istyle %}
 <link rel="stylesheet" href="{% static '/image/css/steganos.css' %}">
@@ -11,9 +13,10 @@
 {% block form_content %}
 <form class="img_form" action="/image/steganos/" method="post" enctype="multipart/form-data"> {% csrf_token %}
     <img src="#" class="mx-auto" id="imgPreview" alt="image preview" onerror="on_img_err();">
+    <p class="mx-auto text-warning" id="img-dimensions"></p>
     <div class="mb-2">
         <label for="imgFileInput" id="imgLabel" class="form-label fw-bold">Select an Image file</label>
-        <input class="form-control" type="file" accept="image/*" name="imgFile" id="imgFileInput" required>
+        <input class="form-control ta-dark" type="file" accept="image/*" name="imgFile" id="imgFileInput" required>
     </div>
     <hr class="my-1 op-encrypt">
     <div class="mb-2 op-encrypt">
@@ -22,12 +25,14 @@
     </div>
     <div class="mb-2 op-encrypt">
         <label for="txtArea" class="form-label fw-bold">Text to hide</label>
-        <textarea class="form-control" name="text" placeholder="Enter your text here" value="{{values.text}}" id="txtArea"></textarea>
+        <textarea class="form-control ta-dark" name="text" placeholder="Enter your text here" value="{{values.text}}" id="txtArea"></textarea>
+        <div class="form-text">You can drag and drop text files in text area above.</div>
     </div>
     <div class="mb-2 op-encrypt">
         <label for="key" class="form-label fw-bold">Encryption key:</label>
-        <input type="text" class="form-control" name="key" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp">
-        <div id="keyHelp" class="form-text">Encryption key is nothing but a Password to Encrypt/Decrypt your image.</div>
+        <input type="password" class="form-control ta-dark" name="key" autocomplete="off" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp">
+        <div class="form-text text-info">Double tap on Encryption key to show/hide its text</div>
+        <div id="keyHelp" class="form-text">Encryption key is nothing but a Password to Encrypt/Decrypt your text.</div>
     </div>
     <div class="form-check form-switch op-encrypt">
         <input class="form-check-input" name="pass-protected" type="checkbox" role="switch" id="pass-check">
@@ -52,7 +57,9 @@
     {% else %}
     <div id="guest-help" class="form-text">Before using our service, make sure you read our <a class="help-text-link" href="/tos" target="_blank">Terms of Service</a> and <a class="help-text-link" href="/pp" target="_blank">Privacy Policy</a>.</div>
     {% endif %}
-    <button type="button" class="btn btn-primary me-auto my-1" data-bs-toggle="modal" data-bs-target="#how-to-modal">How to use?</button>
+    <button type="button" class="btn btn-primary me-auto my-1" data-bs-toggle="modal" data-bs-target="#how-to-modal">
+        How to use Steganos?
+    </button>
     {% if err %}
     <div id="err" class="form-text fw-bold fs-5"> {{err}} </div>
     {% endif %}
@@ -68,7 +75,6 @@
 {% endblock %}
 
 {% block modals %}
-{% comment %} Modal containing job info here {% endcomment %}
 <div class="modal fade" id="ftype-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
     aria-labelledby="info-modal-h" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -140,33 +146,32 @@
 </div>
 
 <div class="modal fade" id="how-to-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-3 fw-bold text-info" id="how-to-modal-h">Instructions to use Image Steganography</h1>
+                <h1 class="modal-title fs-3 fw-bold text-info" id="how-to-modal-h">Steganos : Image Steganography</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="how-to-modal-content" class="modal-body modal_text">
                 <p class="fs-5">
                     <span class="fs-3 fw-bold text-info">Image Steganography :</span> <br>
 
-                    Image steganography is the technique of hiding secret information within an image. This is done by
-                    manipulating the least significant bits of the pixel values in the image to encode the secret
-                    information. The resulting image looks no different from the original image, but the hidden message
-                    can be retrieved by a recipient who knows how to extract it. <br><br>
+                    Image steganography is the technique of hiding secret information within an image. <br>
+                    This is done by manipulating the least significant bits of the pixel values in the image to encode the 
+                    secret information. The resulting image looks no different from the original image, 
+                    but the hidden message can be retrieved by the recipient using the same application used to encode it. <br><br>
 
-                    <span class="fs-3 fw-bold text-info">Instructions for using Image Steganography :</span> <br>
+                    <span class="fs-3 fw-bold text-info">Instructions for using Steganos :</span> <br>
                     To hide text within an image, make sure the number of characters of text does not exceed the value
-                    of (no. of pixels in image / 3), i.e., each character takes up 3 pixels. This ensures that the
-                    hidden text can be fully encoded into the image without any loss of information. <br><br>
+                    of (no. of pixels in image / 3) + (60), i.e., each character takes up 3 pixels. and +60 because some text will be added in server to ensure security and integrity of your data.
+                    This ensures that the hidden text can be fully encoded into the image without any loss of information. <br><br>
 
-                    <span class="text-light">
-                        Our Image Steganography feature also includes an option to add password protection. If this option
-                        is disabled, then the text can be extracted from the image without a password or encryption key.
-                        However, if you enable this option, then you or anyone trying to extract the text from the image
-                        will be required to enter a password or encryption key to access the extracted text. Without the
-                        correct password or key, the text will not be provided.
-                    </span><br><br>
+                    Our Steganos application also includes an option to add password protection. If this option
+                    is disabled, then the text can be extracted from the image without a password or encryption key.
+                    However, if you enable this option, then you or anyone trying to extract the text from the image
+                    will be required to enter a password or encryption key to access the extracted text. Without the
+                    correct password or key, the text will not be provided.
+                    <br><br>
 
                     <span class="text-warning">
                         We take your privacy seriously and do not access or share any of the information or data that you

@@ -1,0 +1,29 @@
+{% extends 'text/forms.html' %}
+
+{% block util_bin %}active{% endblock util_bin %}
+
+{% block title %}Encryptify - Binary{% endblock title %}
+
+{% load static %}
+
+{% block form_title %}Binary{% endblock form_title %}
+
+{% block key_block %}
+<div class="form-check form-switch mb-1">
+    <input class="form-check-input" name="operation" type="radio" role="switch" id="t2b" value="encrypt" checked required>
+    <label class="form-check-label" for="t2b">Text to Binary</label>
+</div>
+<div class="form-check form-switch mb-1">
+    <input class="form-check-input" name="operation" type="radio" role="switch" id="b2t" value="decrypt">
+    <label class="form-check-label" for="b2t">Binary to Text</label>
+</div>
+<div class="btn-container ms-auto">
+    <button class="btn btn-primary m-1" id="c-btn">Convert</button>
+</div>
+{% endblock key_block %}
+
+{% block rph_text %}Converted text will appear here{% endblock rph_text %}
+
+{% block tscript %}
+<script src="{% static '/text/js/binary.js' %}"></script>
+{% endblock tscript %}

@@ -4,15 +4,6 @@ const err = document.getElementById('err');
 
 password_input.addEventListener('dblclick',show_hide);
 
-function show_hide(){
-    if (this.type=='text'){
-        this.type = 'password'
-    }
-    else{
-        this.type = 'text'
-    }
-}
-
 function lgcheck(){
     return confirm("Are you sure you want to logout?");
 }
@@ -35,7 +26,7 @@ function onSubmit(){
             flag = false;
         }
     }
-    let url = '/logincheck';
+    let url = '/logincheck/';
     let body = object_to_URI_string({
         'email' : email,
         'password' : password

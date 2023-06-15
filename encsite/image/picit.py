@@ -1,6 +1,8 @@
 from PIL import Image
+import os
 import numpy as np
-import utils
+import threading
+from . import utils
 
 
 DEFAULT_COLOR = (0, 0, 0)
@@ -12,7 +14,7 @@ sgt_list = utils.json.loads(utils.envs["PICIT_SIGNATURE_LIST"])
 sgt_list.append(SIGNATURE_TEXT)
 
 
-def hide_data(message: str, key: list, enc_strictnes: tuple) -> Image.Image:
+def hide_data(message: str, key: list,cb_list:list['function'],cb_args:list[list]) -> Image.Image:
     """
     takes message and key, encrypts the message and stores it in Image, returns the Image object
 
@@ -22,7 +24,16 @@ def hide_data(message: str, key: list, enc_strictnes: tuple) -> Image.Image:
     :return: Image which is having data hidden in it
     :raises OverflowError : if the image requires more than 2360x2360 pixels
     """
+    enc_strictnes = (1,1,0)
+    cb1,cb2 = cb_list
+    args1,args2 = cb_args
+    if len(message)> MAX_TEXT_LIMIT:
+        raise OverflowError("Text size too big, divide the text into smaller chunks and try to create multiple images.")
+    key = utils.get_key(key) if type(key)==str else key
+    th1 = threading.Thread(target=cb1,args=args1)
+    th2 = threading.Thread(target=cb2,args=args2)
     # Adding signature text to detect the key while extracting the data from image
+    th1.start()
     message = f"{SIGNATURE_TEXT} {message} {SIGNATURE_TEXT}"
     orientation = utils.randint(0, 1)
     required_pixels = 6
@@ -34,8 +45,7 @@ def hide_data(message: str, key: list, enc_strictnes: tuple) -> Image.Image:
     required_pixels += (len(enc_tup) + len(key_tup))
     img_len = utils.get_dimension(required_pixels)
     if img_len > MAX_PIXEL_LIMIT or len(encrypted_text) > MAX_TEXT_LIMIT:
-        raise OverflowError(
-            "Image size too big, divide the size of text into smaller chunks and try to create multiple images.")
+        raise OverflowError("Text size too big, divide the text into smaller chunks and try to create multiple images.")
     # img len to use as index, for ease of use, decrementing by 1 and storing in variable below
     ti_len = img_len - 1
     map_to_pixel = {
@@ -58,70 +68,15 @@ def hide_data(message: str, key: list, enc_strictnes: tuple) -> Image.Image:
     # text length tuple
     tltup = utils.get_tuple_from_size(len(encrypted_text))
     img.putpixel(map_to_pixel['txtlen'], tltup)
-
-    # --------- Key tuples --------- #
-    # key length tuple
-    kltup = utils.get_tuple_from_size(len(key))
-    img.putpixel(map_to_pixel['keylen'], kltup)
-
-    # putting encryption key pixels
-    kctup = (0, orientation, 0)
     i, j = 0, 0
-    count = 0
-    i1, j1 = 0, 0
-    if enc_strictnes[0] == 0:
-        # key is auto generated , include the key in image
-        index = 0
-        while (i < img_len or j < img_len) and index != len(key_tup):
-            j = 0
-            while j < img_len and index != len(key_tup):
-                t = key_tup[index]
-                if len(t) < 3:
-                    t = list(t)
-                    while len(t) != 3:
-                        t.append(0)
-                    t = tuple(t)
-                if orientation == 0:
-                    pxl = (i, j)
-                    if pxl in ignored_pixels:
-                        pass
-                    else:
-                        if count == 0:
-                            kctup = (i, orientation, j)
-                            count += 1
-                        img.putpixel(pxl, t)
-                        i1, j1 = i, j
-                        ignored_pixels.append(pxl)
-                        index += 1
-                else:
-                    pxl = (j, i)
-                    if pxl in ignored_pixels:
-                        pass
-                    else:
-                        if count == 0:
-                            kctup = (j, orientation, i)
-                            count += 1
-                        img.putpixel(pxl, t)
-                        i1, j1 = i, j
-                        ignored_pixels.append(pxl)
-                        index += 1
-                j += 1
-            i += 1
-
-        # putting the initial key co-ordinates in (n,n)
-        img.putpixel(map_to_pixel['keyco-ord'], kctup)
-        i -= 1
-        j -= 1
-    else:
-        # putting the initial key co-ordinates in (n,n)
-        kctup = (0, orientation, 0)
-        img.putpixel(map_to_pixel['keyco-ord'], kctup)
+    # putting the initial key co-ordinates in (n,n)
+    kctup = (0, orientation, 0)
+    img.putpixel(map_to_pixel['keyco-ord'], kctup)
 
     # putting encrypted text pixels
     tctup = (0, 0, 0)
     count = 0
     index = 0
-    i, j = i1, j1
     while (i < img_len or j < img_len) and index != len(enc_tup):
         # not changing the value of j initially, so that the text co-ordinates are not modified
         if count != 0:
@@ -159,6 +114,8 @@ def hide_data(message: str, key: list, enc_strictnes: tuple) -> Image.Image:
     # putting the initial co-ordinates of text in (0,n)
     img.putpixel(map_to_pixel['txtco-ord'], tctup)
     img = scrambler(img,key)
+    th2.start()
+    th2.join()
     return img
 
 
@@ -187,8 +144,7 @@ def check_img(img: Image.Image,key:list) -> Image.Image:
     }
     # checking if the encryption strictness tuples are present in image or not,
     # there is chance that image can be rotated sometimes, so we also check by rotating the image
-
-    img = unscrambler(img,key)
+    img = unscrambler(img, key)
     p01, p10 = img.getpixel(map_to_pixel['encstrict'][0]), img.getpixel(map_to_pixel['encstrict'][1])
     for i in range(3):
         if p01 != p10:
@@ -208,7 +164,7 @@ def check_img(img: Image.Image,key:list) -> Image.Image:
     return img
 
 
-def extract_data(img: Image.Image) -> str:
+def extract_data(img: Image.Image,key,cb_list:list['function'],cb_args:list[list]) -> str:
     """
         Takes the Image object and extracts the encrypted data from it, returns str: extracted text
 
@@ -216,8 +172,12 @@ def extract_data(img: Image.Image) -> str:
         :return: str : extracted text
         :raises TypeError : if the given image `img` is not encoded by PicIt tool
     """
+    cb1,cb2 = cb_list
+    args1,args2 = cb_args
+    key = utils.get_key(key) if type(key) == str else key
     # -- checking if the given image is encoded using PicIt or not -- #
-    img = check_img(img)
+    cb1(*args1)
+    img = check_img(img,key)
 
     # we are here only if Image is encoded using PicIt. safe to extract data and interpret
     img_len = img.size[0]
@@ -234,52 +194,13 @@ def extract_data(img: Image.Image) -> str:
     # extracting metadata
     tltup = img.getpixel(map_to_pixel['txtlen'])
     tctup = img.getpixel(map_to_pixel['txtco-ord'])
-    kltup = img.getpixel(map_to_pixel['keylen'])
     kctup = img.getpixel(map_to_pixel['keyco-ord'])
-    encstrict = img.getpixel(map_to_pixel['encstrict'][0])
 
     orientation = kctup[1]
     text_length = utils.get_size_from_tuple(tltup)
-    key = []
     text_list = []
     txtuplen = int(text_length / 3) + 1
 
-    i, j = 0, 0
-    if encstrict[0] == 0:
-        # key is auto generated. extract key from image and send the decrypted data
-        key_length = utils.get_size_from_tuple(kltup)
-        ktuplen = int(key_length / 3) + 1
-        temp_kl = ktuplen
-        i, orientation, j = kctup
-        if orientation == 1:
-            i, j = j, i
-
-        # extracting the key
-        while (i < img_len or j < img_len) and temp_kl != 0:
-            j = 0
-            while j < img_len and temp_kl != 0:
-                if orientation == 0:
-                    pxl = (i, j)
-                    if pxl in ignored_pixels:
-                        pass
-                    else:
-                        t = img.getpixel(pxl)
-                        temp_kl -= 1
-                        for v in t:
-                            key.append(v)
-                else:
-                    pxl = (j, i)
-                    if pxl in ignored_pixels:
-                        pass
-                    else:
-                        t = img.getpixel(pxl)
-                        temp_kl -= 1
-                        for v in t:
-                            key.append(v)
-                j += 1
-            i += 1
-
-    # if key is manually added, then only raw text data will be returned
     temp_tl = txtuplen
     i, _x, j = tctup
     if orientation == 1:
@@ -299,49 +220,29 @@ def extract_data(img: Image.Image) -> str:
                     pass
                 else:
                     t = img.getpixel(pxl)
-                    if t == DEFAULT_COLOR:
-                        break_flag = True
-                        break
-                    else:
-                        temp_tl -= 1
-                        for v in t:
-                            text_list.append(v)
+                    temp_tl -= 1
+                    for v in t:
+                        text_list.append(v)
             else:
                 pxl = (j, i)
                 if pxl in ignored_pixels:
                     pass
                 else:
                     t = img.getpixel(pxl)
-                    if t == DEFAULT_COLOR:
-                        break_flag = True
-                        break
-                    else:
-                        temp_tl -= 1
-                        for v in t:
-                            text_list.append(v)
+                    temp_tl -= 1
+                    for v in t:
+                        text_list.append(v)
             j += 1
         if break_flag:
             break
         else:
             i += 1
     # slicing the text and key to their expected lengths
+    cb2(*args2)
     text_list = text_list[:text_length]
-    if len(key) > 0:
-        key = key[:key_length]
-        text = "".join([chr(x) for x in text_list])
-        return utils.deciph(text, key)
-    else:
-        return "".join([chr(x) for x in text_list])
-
-
-def get_enc_tup(img: Image.Image) -> tuple:
-    """
-    takes Image object and returns the encryption strictness tuple
-    :param img:
-    :return: tuple present at encryption strictness pixel i.e (1,0) or (0,1)
-    """
-    img = check_img(img)
-    return img.getpixel((1, 0))
+    ex_text = "".join([chr(x) for x in text_list])
+    ex_text = utils.deciph(ex_text,key)
+    return ex_text
 
 def img_to_array(img:Image.Image):
     """
@@ -388,6 +289,40 @@ def unscrambler(img,key) -> Image.Image:
     seed = utils.get_seed(key[::-1])
     data = utils.unscramble(data, seed)
     return array_to_img(data, h, w)
+
+def save_after(action, action_args, thr_to_join:threading.Thread, job:"django.db.models.Model", paths:dict):
+    thr_to_join.join()
+    if action == 'encrypt':
+        ipath = paths["path"]
+        ipath = utils.set_path_extension(path=ipath,ext='png')
+        tpath = paths["temp"]
+        pct_text = utils.read_bytes(tpath)
+        action_args.insert(0, pct_text)
+        try:
+            img = hide_data(*action_args)
+            img.save(ipath, format="PNG")
+            job.result_saved = True
+            job.save()
+        except OverflowError as err:
+            j_errs = job.errs.copy()
+            j_errs["OverflowError"] = err.args[0]
+            job.errs = j_errs
+            job.save()
+        finally:
+            os.remove(tpath)
+    else:
+        ipath = paths["path"]
+        img = Image.open(ipath)
+        x,y = img.size
+        if x != y or (x>MAX_PIXEL_LIMIT or y>MAX_PIXEL_LIMIT):
+            j_errs = job.errs.copy()
+            j_errs["TypeError"] = "Given Image is not a PicIt image code 1"
+            job.errs = j_errs
+            job.save()
+            os.remove(ipath)
+        else:
+            job.result_saved = True
+            job.save()
 
 legend = \
 """

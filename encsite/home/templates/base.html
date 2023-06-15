@@ -2,75 +2,93 @@
 <html lang="en">
 
 <head>
-  {% load static %}
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{% endblock %}</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
-  {% block style %} {% endblock %}
+    {% load static %}
+    <meta charset="UTF-16">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block style %} {% endblock %}
 </head>
 
 <body>
     <nav class="navbar navbar-dark sticky-top glass_effect navbar-expand-lg rounded-5 ps-2 m-2">
         <div class="container-fluid">
-          <span class="navbar-brand fs-4 fw-bold">Encryptify</span>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item mx-2">
-                <a class="nav-link fs-5 {% block homeactive %} {% endblock %}" aria-current="page" href="/">Home</a>
-              </li>
-              <li class="nav-item mx-2">
-                <a class="nav-link fs-5 {% block textactive %} {% endblock %}" aria-current="page" href="/text/">Text Encryption</a>
-              </li>
-              <li class="nav-item mx-2">
-                <a class="nav-link fs-5 {% block imageactive %} {% endblock %}" aria-current="page" href="/image/">Image Encryption</a>
-              </li>
-              <li class="nav-item dropdown dropdown-center mx-2">
-                <span class="nav-link fs-5 dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Utilities
-                </span>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                  <li><span class="dropdown-item-text"><b>Text utilities</b></span></li>
-                  <li><a class="dropdown-item" href="#">Special Vigenere cipher</a></li>
-                  <li><a class="dropdown-item" href="#">XOR+Scramble</a></li>
-                  <li><a class="dropdown-item" href="#">Scramble</a></li>
-                  <li><a class="dropdown-item" href="#">Binary</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><span class="dropdown-item-text"><b>Image utilities</b></span></li>
-                  <li><a class="dropdown-item" href="/image/encryption/">Encrypt Image</a></li>
-                  <li><a class="dropdown-item" href="/image/steganos">Image Steganography</a></li>
-                  <li><a class="dropdown-item" href="#">Text <b>⇄</b> Image</a></li>
+            <a class="navbar-brand fs-4 fw-bold" href="/">Encryptify</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navDropdown"
+                aria-controls="navDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navDropdown">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link fs-5 {% block homeactive %} {% endblock homeactive %}" aria-current="page"
+                            href="/">Home</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link fs-5 {% block textactive %} {% endblock textactive %}" aria-current="page"
+                            href="/text/">Text Encryption</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link fs-5 {% block imageactive %} {% endblock imageactive %}" aria-current="page"
+                            href="/image/">Image Encryption</a>
+                    </li>
+                    <li class="nav-item dropdown dropdown-center mx-2">
+                        <span class="nav-link fs-5 dropdown-toggle {% block utactive %}{% endblock utactive %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Utilities
+                        </span>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><span class="dropdown-item-text text-warning"><b>Text utilities</b></span></li>
+                            <li><a class="dropdown-item {% block util_vciph %}{% endblock util_vciph %}" href="/text/vigenere_plus/">Special Vigenere cipher</a></li>
+                            <li><a class="dropdown-item {% block util_tscr %}{% endblock util_tscr %}" href="/text/scramble/">Scramble</a></li>
+                            <li><a class="dropdown-item {% block util_bin %}{% endblock util_bin %}" href="/text/binary/">Binary</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><span class="dropdown-item-text text-warning"><b>Image utilities</b></span></li>
+                            <li><a class="dropdown-item {% block util_ienc %}{% endblock util_ienc %}"
+                                    href="/image/encryption/">Encrypt Image</a></li>
+                            <li><a class="dropdown-item {% block util_istg %}{% endblock util_istg %}"
+                                    href="/image/steganos/">Steganos: Image Steganography</a></li>
+                            <li><a class="dropdown-item {% block util_ipic %}{% endblock util_ipic %}"
+                                    href="/image/picit/">PicIt: Text <b>⇄</b> Image</a></li>
+                        </ul>
+                    </li>
                 </ul>
-              </li>
-            </ul>
-            {% if userinfo %} 
-            <div class="nav-item dropdown-center px-2" id="userdropdown">
-              <a class="nav-link fs-5 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Welcome, {{userinfo.name|truncatechars:10}}
-              </a>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li class="dropdown-item-text ">{{userinfo.email}}</li>
-                <li><a class="dropdown-item " href="#">My Image Tasks</a></li>
-                <li><a class="dropdown-item " href="/logout" onclick="return lgcheck()">Logout</a></li>
-                <li><a class="dropdown-item " href="#">Delete account</a></li>
-              </ul>
+                {% if userinfo %}
+                <div class="nav-item dropdown-center px-2" id="userdropdown">
+                    <span class="nav-link fs-5 dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Welcome, {{userinfo.name|truncatechars:10}}
+                    </span>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li class="dropdown-item-text ">{{userinfo.email}}</li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item " href="#">My Image Tasks</a></li>
+                        <li><a class="dropdown-item " href="/logout" onclick="return lgcheck()">Logout</a></li>
+                        <li><a class="dropdown-item bg-danger text-warning" href="#">Delete account</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="d-inline me-3">
+                    <a role="button" class="btn btn-outline-light border border-0 btn-sm px-1 rounded-3 {% block loginactive %}{% endblock loginactive %} fs-5 mx-1" href="/login/">
+                        Login
+                    </a>
+                    <a role="button" class="btn btn-outline-light border border-0 btn-sm px-1 rounded-3 {% block signupactive %}{% endblock signupactive %} fs-5 mx-1" href="/signup/">
+                        Sign up
+                    </a>
+                </div>
+                {% endif %}
             </div>
-            {% else %}
-              <a class="navbar-text lslink {% block loginactive %}{% endblock loginactive %} fs-5 mx-2" href="/login">Login</a>
-              <span style="color: lightgray;">/</span>
-              <a href="/signup" class="navbar-text lslink {% block signupactive %}{% endblock signupactive %} fs-5 mx-2">Sign up</a>
-            {% endif %}
-          </div>
         </div>
-      </nav>
+    </nav>
     {% block content %} {% endblock %}
     {% block modals %}{% endblock modals %}
     <script src="{% static 'js/base.js' %}"></script>
     {% block script %} {% endblock %}
+    <script src="{% static 'js/postscript.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
+
 </html>

@@ -1,5 +1,7 @@
 {% extends 'image/forms.html' %}
 
+{% block util_ienc %}active{% endblock %}
+
 {% block title %} Image Encryption - Encryptify {% endblock %} 
 {% load static %}
 {% block form_title %} Encrypt/Decrypt Your Image {% endblock %}
@@ -11,13 +13,15 @@
 {% block form_content %} 
 <form class="img_form" action="/image/encryption/" method="post" enctype="multipart/form-data"> {% csrf_token %}
     <img src="#" class="mx-auto" id="imgPreview" alt="image preview" onerror="on_img_err();">
+    <p class="mx-auto text-warning" id="img-dimensions"></p>
     <div class="mb-3">
         <label for="imgFileInput" class="form-label">Select an Image file</label>
-        <input class="form-control" type="file" accept="image/*" name="imgFile" id="imgFileInput" required>
+        <input class="form-control ta-dark" type="file" accept="image/*" name="imgFile" id="imgFileInput" required>
     </div>
     <div class="mb-2">
         <label for="key" class="form-label">Encryption key:</label>
-        <input type="text" class="form-control" name="key" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp" required>
+        <input type="password" class="form-control ta-dark" name="key" autocomplete="off" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp" required>
+        <div class="form-text text-info">Double tap on Encryption key to show/hide its text</div>
         <div id="keyHelp" class="form-text">Encryption key is nothing but a Password to Encrypt/Decrypt your image.</div>
     </div>
     <button type="button" class="btn btn-secondary me-auto my-1" onclick="set_random_key();"><span class="fw-bold">Generate random key</span></button>
@@ -42,9 +46,32 @@
     <div id="err" class="form-text fw-bold fs-5"> {{err}} </div>
     {% endif %}
     <button type="submit" class="btn btn-primary ms-auto my-2 px-5"><span class="fw-bolder">Submit</span></button>
+    <button type="button" id="hidden-img-err-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#img-err-modal"></button>
 </form>
 {% endblock %}
 
 {% block iscript %}
 <script src="{% static '/image/js/encryption.js' %}"></script>
 {% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="img-err-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="img-err-modal-h">Alert</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="img-err-modal-content" class="modal-body modal_text">
+                <p class="fs-5">
+                    Please select a static image file.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock modals %}

@@ -5,8 +5,8 @@ const email = document.getElementById('email');
 const uname = document.getElementById('name');
 const genradios = document.getElementsByName('gender');
 
-p1.addEventListener('dblclick',show_hide);
-p2.addEventListener('dblclick',show_hide);
+p1.ondblclick = show_hide;
+p2.ondblclick = show_hide;
 
 function get_gender(){
     for(var i = 0; i<genradios.length;i++){
@@ -14,15 +14,6 @@ function get_gender(){
         if(elm.checked){
             return elm.value;
         }   
-    }
-}
-
-function show_hide(){
-    if (this.type=='text'){
-        this.type = 'password';
-    }
-    else{
-        this.type = 'text';
     }
 }
 
@@ -56,7 +47,7 @@ function onSubmit(){
                     flag = false;
                 }
             };
-            let url = '/signupcheck';
+            let url = '/signupcheck/';
             let data = {
                 'name' : name_val,
                 'email' : email_val,

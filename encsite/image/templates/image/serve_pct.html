@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %} {{title}} {% endblock title %}
+
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static '/image/css/serve_pct.css' %}">
+{% endblock style %}
+
+{% block content %}
+<div id="info-container" class="glass_effect rounded-5 mx-auto my-3 p-3">
+    <input type="hidden" id="job_data" data-job-id="{{job_id}}">
+    <div id="info_text" class="fw-bold fs-4 mx-auto"> 
+        {{job_info}} 
+    </div>
+    <div id="spinner" class="d-flex align-items-center mx-auto">
+        <div class="spinner-grow text-light mx-3" role="status"></div>
+        <h4 class="fw-bold" id="buffertext">Loading...</h4>
+    </div>
+    <p id="err" class="text-danger mx-auto fw-bold fs-5"></p>
+    <div class="text-warning fs-5 mx-auto" id="img-dimensions"></div>
+    <div class="mb-2" id="pct-imgarea">
+        <img src="{{isrc}}" class="mx-auto" alt="Please wait as the image loads" id="job_image" onerror="on_img_err()">
+        <button id="secondary-img-download" class="btn btn-success d-block mx-auto my-1">Download Image</button>
+        <a id="img-download-btn" href="#" target="_blank" class="btn btn-success hidden mx-auto my-1"></a>
+    </div>
+    <div class="mb-2" id="pct-textarea">
+        <textarea class="form-control ta-dark my-2" id="txtArea" readonly></textarea>
+        <button id="txt-download-btn" role="button" class="btn btn-success d-block mx-auto my-1">
+            Download text as a file
+        </button>
+    </div>
+    <div id="btn-container">
+        <button id="enter-key-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ask-key-modal">
+            Enter password/encryption key
+        </button>
+        <button id="show-info-btn" data-bs-toggle="modal" data-bs-target="#info-modal" class="btn btn-primary mx-auto my-1">Show details</button>
+        <button id="ask-key-modal-btn" data-bs-toggle="modal" data-bs-target="#ask-key-modal" class="btn btn-primary hidden mx-auto my-1"></button>
+        <button id="err-modal-btn" data-bs-toggle="modal" data-bs-target="#err-modal" class="btn btn-primary hidden mx-auto my-1"></button>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static '/image/js/serve_pct.js' %}"></script>
+{% endblock script %}
+
+{% block modals %}
+<div class="modal fade" id="info-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="info-modal-h">Task Status</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="info-modal-content" class="modal-body modal_text">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ask-key-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="ask-key-modal-h">Password Required</h1>
+            </div>
+            <div id="ask-key-modal-content" class="modal-body">
+                <form action="#" id="key-form" onsubmit="return key_submit();">
+                    <div class="mb-2">
+                        <label for="key" class="form-label fw-bold">Enter password/encryption key:</label>
+                        <input type="password" class="form-control ta-dark" placeholder="Enter password/encryption key here" id="pct-key" value="{{values.key}}" aria-describedby="keyHelp">
+                        <div class="form-text">Double tap on your password to show/hide</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="key-form" class="btn btn-primary" data-bs-dismiss="modal" id="key-submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="err-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="err-modal-h">Error!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="err-modal-content" class="modal-body">
+                <p id="err-modal-text" class="text-warning"></p>
+                <span class="text-warning">Please try again.</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="try-again-modal-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ask-key-modal">
+                    Try again
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

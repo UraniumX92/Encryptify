@@ -3,7 +3,41 @@ function object_to_URI_string(obj){
     Object.keys(obj).forEach(function(key){
         rstr += `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}&`
     });
-    return rstr.slice(0,rstr.length-1);
+    return rstr.slice(0,rstr.length-1); 
+}
+
+function capitalize_first(str) {
+    let capped = "";
+    for(let i=0;i<str.length;i++){
+        if(i===0){
+            capped += str[i].toUpperCase();
+        }
+        else{
+            capped += str[i];
+        }
+    }
+    return capped;
+}
+
+function get_file(file_input){
+    [ifile] = file_input.files;
+    return ifile;
+}
+
+function get_file_type(file){
+    return file.type || 'unknown';
+}
+
+function show_hide(e){
+    if(this.value===''){
+        return;
+    }
+    if (this.type=='text'){
+        this.type = 'password';
+    }
+    else{
+        this.type = 'text';
+    }
 }
 
 function download_text_file(data,filename) {
@@ -36,12 +70,12 @@ function enableDropFiles(element,fileInput){
 
 function getDateTimeStr(dt){
     let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let seconds = dt.getUTCSeconds();
-    let minutes = dt.getUTCMinutes();
-    let hours = dt.getUTCHours();
-    let day = dt.getUTCDate();
-    let month = dt.getUTCMonth();
-    let year = dt.getUTCFullYear();
+    let seconds = dt.getSeconds();
+    let minutes = dt.getMinutes();
+    let hours = dt.getHours();
+    let day = dt.getDate();
+    let month = dt.getMonth();
+    let year = dt.getFullYear();
     let ampm = "AM";
     if (hours > 12) {
         hours -= 12;
@@ -54,5 +88,6 @@ function getDateTimeStr(dt){
         }
     }
     [day,hours,minutes,seconds] = tcomponents;
-    return `${day}/${months[month]}/${year} - ${hours}:${minutes}:${seconds} ${ampm} [UTC]`;
+    let tz_abbr = String(String(dt).split("(")[1]).split(")")[0];
+    return `${day}/${months[month]}/${year} - ${hours}:${minutes}:${seconds} ${ampm} [${tz_abbr}]`;
 }

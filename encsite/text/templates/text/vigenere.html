@@ -1,0 +1,13 @@
+{% extends 'text/forms.html' %}
+
+{% block util_vciph %}active{% endblock util_vciph %}
+
+{% block title %}Encryptify - Vigenere+{% endblock title %}
+
+{% load static %}
+
+{% block form_title %}Vigenere+{% endblock form_title %}
+
+{% block tscript %}
+<script src="{% static '/text/js/vigenere.js' %}"></script>
+{% endblock tscript %}

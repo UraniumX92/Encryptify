@@ -1,7 +1,3 @@
-body {
-    height: 110vh;
-}
-
 #hidden-div{
     display: flex;
     width: 99vw;
@@ -11,7 +7,7 @@ body {
 .signup-container{
     display: flex;
     flex-direction: column;
-    width: 45vw;
+    width: 50ex;
     margin-top: 15vh;
     justify-content: center;
 }

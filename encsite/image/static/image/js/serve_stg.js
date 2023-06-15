@@ -1,12 +1,15 @@
 const job_image = document.getElementById("job_image");
 const info_text = document.getElementById("info_text");
+const error_text = document.getElementById("err");
 const data_element = document.getElementById("job_data");
+const spinner = document.getElementById("spinner");
 const job_id = data_element.getAttribute("data-job-id");
 const show_info_btn = document.getElementById("show-info-btn");
 const img_download_btn = document.getElementById("img-download-btn");
 const secondary_img_download_btn = document.getElementById("secondary-img-download");
-const try_again_btn = document.getElementById("enter-key-btn");
+const enter_key_btn = document.getElementById("enter-key-btn");
 const txt_download_btn = document.getElementById("txt-download-btn");
+const try_again_modal_btn = document.getElementById("try-again-modal-btn");
 const modal = document.getElementById("info-modal");
 const modal_heading = document.getElementById("info-modal-h");
 const modal_body = document.getElementById("info-modal-content");
@@ -20,9 +23,9 @@ const err_content = document.getElementById("err-modal-text");
 const stg_key_inp = document.getElementById("stg-key");
 const modal_ask_key = document.getElementById("ask-key-modal");
 const key_form = document.getElementById("key-form");
-const info_url = `/image/steganos/info/${job_id}`;
-const img_url = `/image/steganos/job/${job_id}?file=img`;
-const txt_url = `/image/steganos/job/${job_id}?file=txt`;
+const img_dim = document.getElementById("img-dimensions");
+const info_url = `/image/steganos/info/${job_id}/`;
+const job_url = `/image/steganos/job/${job_id}/`;
 const interval = 1000;
 let extract_text_success = false;
 let image_poll_interval = null;
@@ -37,6 +40,11 @@ function on_img_err(){
     job_image.style.display = 'none';
 }
 
+job_image.onload = function(e){
+    spinner.innerHTML = '';
+    img_dim.innerHTML = `${job_image.naturalWidth}x${job_image.naturalHeight}`;
+}
+
 on_img_err();
 
 function poll_for_job_info(){
@@ -47,31 +55,30 @@ function poll_for_job_info(){
             xresp = JSON.parse(this.responseText);
         }
         catch(err){
-            console.log(this.responseText);
             clearInterval(info_poll_interval);
         }
-        if(xresp['status'] === 200){
-            if(xresp['message']==="Finished"){
+        let {status,message} = xresp;
+        if(status === 200){
+            if(message==="Finished"){
                 clearInterval(info_poll_interval);
                 let job_info = xresp['job_info'];
                 if(job_info['operation']==="encrypt"){
                     imgarea_container.style.display = 'block';
-                    job_image.src = img_url;
+                    job_image.src = job_url;
                     job_image.style.display = 'block';
-                    img_download_btn.href = img_url;
+                    img_download_btn.href = job_url;
                     info_text.innerHTML = "Image successfully loaded";
                     show_info_btn.style.display = 'block';
-                    try_again_btn.style.display = 'none';
+                    enter_key_btn.style.display = 'none';
                 }
                 else{
-                    // Get text now and display in disabled textarea
-                    // and add a download text file button (client side downloading)
                     if(job_info['protected']){
-                        info_text.innerText = "Image is password protected";
+                        enter_key_btn.style.display = 'block';
+                        info_text.innerHTML = "Stego-Image is password protected";
                         ask_key_modal_btn.click();
                     }
                     else{
-                        info_text.innerText = "Extracting text..."
+                        info_text.innerHTML = "Extracting text..."
                         get_stg_text();
                     }
                 }
@@ -90,12 +97,22 @@ function poll_for_job_info(){
                 innerHTML += `<span class="fw-bold">Expires at :</span> ${getDateTimeStr(exp)}<br><br>`;
                 innerHTML += `<span class="fw-bold">Time taken to perform operation :</span> ${job_info['time_taken']}.<br></p>`;
                 modal_body.innerHTML = innerHTML;
-                modal_heading.innerHTML = `Image Steganography Task Details:`
+                modal_heading.innerHTML = `Steganos Task Details:`
             }
-            else{
-                modal_body.innerHTML = xresp['message'];
-                info_text.innerHTML = xresp['message'];
-            }
+        }
+        else if(status===102){
+            modal_body.innerHTML = message;
+            info_text.innerHTML = "Processing...";
+        }
+        else if(status===415){
+            clearInterval(info_poll_interval)
+            try_again_modal_btn.style.display = 'none';
+            let errs = xresp['errs'];
+            let err_txt = Object.values(errs)[0];
+            info_text.innerHTML = "Error";
+            err_content.innerHTML = err_txt;
+            err_modal_btn.click();
+            error_text.innerHTML = err_txt;
         }
         else{
             clearInterval(info_poll_interval);
@@ -106,9 +123,9 @@ function poll_for_job_info(){
 }
 
 function get_stg_text(key=null){
-    let t_url = txt_url;
+    let t_url = job_url;
     if(key){
-        t_url += `&key=${encodeURIComponent(key)}`;
+        t_url += `?key=${encodeURIComponent(key)}`;
     }
     let xhr = new XMLHttpRequest();
     xhr.onload = function(e){
@@ -120,16 +137,19 @@ function get_stg_text(key=null){
             textarea_container.style.display = 'block';
             textarea.value = resp['text'];
             show_info_btn.style.display = 'block';
-            try_again_btn.style.display = 'none';
+            enter_key_btn.style.display = 'none';
         }
         else{
-            err_content.innerText = resp['err'];
+            err_content.innerHTML = resp['err'];
             err_modal_btn.click();
         }
+        spinner.innerHTML = '';
     }
     xhr.open("GET",t_url,true);
     xhr.send();
 }
+
+stg_key_inp.ondblclick = show_hide;
 
 txt_download_btn.onclick = function(e){
     download_text_file(textarea.value,txt_filename);
@@ -139,19 +159,17 @@ secondary_img_download_btn.onclick = function(e){
     img_download_btn.click();
 }
 
-key_form.onsubmit = function(e){
+function key_submit(){
     let key = stg_key_inp.value;
     if(key){
         get_stg_text(key);
         stg_key_inp.value = '';
     }
     else{
-        err_content.innerText = "Please enter the password/encryption key";
+        err_content.innerHTML = "Please enter the password/encryption key";
         err_modal_btn.click();
-        // setTimeout(function(){
-        //     err_modal_btn.click();
-        // },interval);
     }
+    return false;
 }
 
 modal_ask_key.addEventListener('shown.bs.modal',function(e){
@@ -159,9 +177,7 @@ modal_ask_key.addEventListener('shown.bs.modal',function(e){
 });
 
 window.onload = function(e){
-    if(!window.location.href.endsWith("?#")){
-        window.location.href = `${window.location.href}?#`;
-    }
+    enter_key_btn.style.display = 'none';
 }
 
 info_poll_interval = setInterval(poll_for_job_info,interval);

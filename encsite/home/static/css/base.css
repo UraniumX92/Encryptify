@@ -1,9 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 :root{
+    --theme-color : rgb(154, 0, 255);
+    --theme-color-dark : rgb(59, 0, 99);
+    --theme-ph-color : rgb(165, 132, 190);
+    --theme-color-light : rgb(179, 101, 231);
+    --theme-color-lighter : rgb(242, 191, 255);
+    --theme-color-lightest : rgb(247, 229, 255);
+    --theme-glass-effect-color : rgba(167, 37, 253, 0.52);
+    --theme-drop-down-bg : rgb(78, 0, 131);
+    --theme-secondary-color : rgb(36, 14, 165);
+    --theme-secondary-color-dark : rgb(19, 7, 82);
+    --theme-secondary-color-glass : rgba(39, 10, 207, 0.52);
+    --scrollbar-size : 5px;
+    --main-scrollbar-bg : rgb(10, 0, 39);
+    --sub-scrollbar-bg : rgba(0, 0, 0, 0);
+    --scrollbar-thumb-color-hover : rgb(174, 53, 255);
+    --scrollbar-thumb-color : rgb(197, 109, 255);
     --help-text-color:rgb(237, 166, 255);
-    --help-text-link-color : rgb(243, 194, 255);
-    --help-text-link-color-hover : rgb(248, 225, 255);
+    --help-text-link-color : rgb(242, 191, 255);
+    --help-text-link-color-hover : rgb(235, 215, 252);
+}
+
+.form-text{
+    color: var(--help-text-color);
 }
 
 .help-text-link{
@@ -15,25 +35,68 @@
     color: var(--help-text-link-color-hover);
 }
 
+.nav-link.tactive{
+    color:white;
+}
+
 html * {
     font-family: 'Poppins';
 }
 
-.glass_effect {
+body::-webkit-scrollbar{
+    z-index: -99;
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    background: var(--main-scrollbar-bg);
+}
+
+*:not(body)::-webkit-scrollbar{
+    z-index: 99;
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    background: var(--sub-scrollbar-bg);
+}
+
+::-webkit-scrollbar-thumb{
+    background-color: var(--scrollbar-thumb-color) ;
+    -webkit-border-radius: 2ex;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background-color: var(--scrollbar-thumb-color-hover);
+}
+
+.ta-dark{
+    background-image: linear-gradient(to bottom right,var(--theme-color-dark),var(--theme-secondary-color-dark));
+    color: var(--theme-color-lightest);
+    border: 2px solid var(--theme-color-light);
+}
+
+.ta-dark::placeholder{
+    color: var(--theme-ph-color);
+}
+
+.ta-dark:active, .ta-dark:focus{
+    background-color: var(--theme-color-dark);
+    color: var(--theme-color-lightest);
+    border: 2px solid var(--theme-color-lighter);
+}
+
+.glass_effect{
     color: white;
-    background-color: rgba(153, 0, 255, 0.25);
-    backdrop-filter: blur(10px);
+    background-image: linear-gradient(to bottom right,var(--theme-glass-effect-color),var(--theme-secondary-color-glass));
+    backdrop-filter: blur(12px);
     box-shadow: -15px 15px 12px rgba(0,0,0, 0.35);
     cursor: default
 }
 
-body {
+body{
     background: url("../img/background.jpg");
     background-size: cover;
     background-attachment: fixed;
-    background-repeat: no-repeat;
+    background-repeat: repeat-y;
     height: auto;
-    width: 99vw;
+    width: auto;
 }
 
 .active{
@@ -41,26 +104,13 @@ body {
     user-select: none;
 }
 
-.centered {
+.centered{
     display: flex;
     align-self: center;
 }
 
-.lslink{
-    color: rgb(175, 175, 175);
-    text-decoration: none;
-}
-
-.lslink:hover{
-    color:rgb(200, 200, 200);
-}
-
 .err-text{
-    color:rgb(248, 54, 54)
-}
-
-.navbar-brand:hover {
-    cursor: default;
+    color: --bs-danger;
 }
 
 .hidden{
@@ -73,7 +123,7 @@ body {
 
 .dropdown-menu-dark.show{
     color: white;
-    background-color: rgb(78, 0, 131);
+    background-image: linear-gradient(to bottom right,var(--theme-color),var(--theme-secondary-color));
 }
 
 .login-container{
@@ -84,10 +134,10 @@ body {
 
 .modal-content{
     color: white;
-    background-color: rgb(153, 0, 255, 0.35);
+    background-image: linear-gradient(to bottom right,var(--theme-color),var(--theme-secondary-color-dark));
     backdrop-filter: blur(300px);
     box-shadow: -15px 15px 12px rgba(0,0,0, 0.35);
-    cursor: default
+    cursor: default;
 }
 
 .modal-header > .btn-close{
@@ -96,13 +146,14 @@ body {
 
 .modal-backdrop {
     z-index: 0;
-    opacity: 0.5 !important;
+    opacity: 0.3 !important;
 }
 
-@media (max-width:768px){
-    /* body{
-        background: url("../img/mbackground.jpg");
-        background-attachment: fixed;
-        background-size: cover;
-    } */
+@keyframes trippy{
+    from{
+        transform : rotate(0deg);
+    }
+    to{
+        transform : rotate(360deg);
+    }
 }

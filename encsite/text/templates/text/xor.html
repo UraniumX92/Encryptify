@@ -1,0 +1,13 @@
+{% extends 'text/forms.html' %}
+
+{% block util_txor %}active{% endblock util_txor %}
+
+{% block title %}Encryptify - XOR{% endblock title %}
+
+{% load static %}
+
+{% block form_title %}XOR{% endblock form_title %}
+
+{% block tscript %}
+<script src="{% static '/text/js/xor.js' %}"></script>
+{% endblock tscript %}

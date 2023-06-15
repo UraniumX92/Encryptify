@@ -1,0 +1,220 @@
+{% extends 'image/forms.html' %}
+
+{% block util_ipic %}active{% endblock %}
+
+{% block title %} PicIt - Encryptify {% endblock %}
+{% load static %}
+{% block form_title %} PicIt : Text ⇄ Image Conversion {% endblock %}
+
+{% block istyle %}
+<link rel="stylesheet" href="{% static '/image/css/picit.css' %}">
+{% endblock %}
+
+{% block form_content %}
+<form class="img_form" action="/image/picit/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+    <img src="#" class="mx-auto op-decrypt" id="imgPreview" alt="image preview" onerror="on_img_err();">
+    <p class="mx-auto text-warning op-decrypt" id="img-dimensions"></p>
+    <div class="mb-2 op-decrypt">
+        <label for="imgFileInput" id="imgLabel" class="form-label fw-bold">Select an Image file</label>
+        <input class="form-control ta-dark" type="file" accept="image/*" name="imgFile" id="imgFileInput">
+    </div>
+    <hr class="my-1 op-decrypt">
+    <div class="mb-2 op-encrypt">
+        <button type="button" class="btn btn-outline-light rounded-4 me-auto my-1" id="txt-inp-btn">Select a file to
+            Import it's text</button>
+        <input class="form-control" type="file" name="txtFile" id="txtFileInput">
+    </div>
+    <div class="mb-2 op-encrypt">
+        <label for="txtArea" class="form-label fw-bold">Text to hide</label>
+        <textarea class="form-control ta-dark" name="text" placeholder="Enter your text here" value="{{values.text}}"
+            id="txtArea"></textarea>
+        <div class="mx-auto my-1 text-info" id="txt-size">.</div>
+        <div class="form-text">You can drag and drop text files in text area above.</div>
+    </div>
+    <div class="mb-2 op-encrypt">
+        <label for="key" class="form-label fw-bold">Encryption key:</label>
+        <input type="password" class="form-control ta-dark" name="key" autocomplete="off" placeholder="Enter key here" id="key" value="{{values.key}}" aria-describedby="keyHelp">
+        <div class="form-text text-info">Double tap on Encryption key to show/hide its text</div>
+        <div id="keyHelp" class="form-text">Encryption key is nothing but a Password to Encrypt/Decrypt your data.</div>
+    </div>
+    <button type="button" class="btn btn-secondary me-auto my-1 op-encrypt" onclick="set_random_key();"><span class="fw-bold">Generate random key</span></button>
+    <button type="button" class="btn btn-secondary me-auto my-1 op-encrypt" onclick="clear_key();"><span class="fw-bold">Clear key field</span></button>
+    <hr class="my-1 op-encrypt">
+    <div class="form-check form-switch my-1">
+        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-encrypt"
+            value="encrypt" checked {{values.echeck}} required>
+        <label class="form-check-label" for="operation-encrypt">Convert text to PicIt Image</label>
+    </div>
+    <div class="form-check form-switch my-1">
+        <input class="form-check-input" name="operation" type="radio" role="switch" id="operation-decrypt"
+            value="decrypt" {{values.decheck}}>
+        <label class="form-check-label" for="operation-decrypt">Convert PicIt Image to text</label>
+    </div>
+    {% if userinfo %}
+    <div class="form-check form-switch">
+        <input class="form-check-input" name="save" type="checkbox" role="switch" id="savecheck">
+        <label class="form-check-label" for="savecheck">Save result for 7 days</label>
+    </div>
+    {% else %}
+    <div id="guest-help" class="form-text">Before using our service, make sure you read our <a class="help-text-link"
+            href="/tos" target="_blank">Terms of Service</a> and <a class="help-text-link" href="/pp"
+            target="_blank">Privacy Policy</a>.</div>
+    {% endif %}
+    <button type="button" class="btn btn-primary me-auto my-1" data-bs-toggle="modal" data-bs-target="#how-to-modal">
+        How to use PicIt?
+    </button>
+    {% if err %}
+    <div id="err" class="form-text fw-bold fs-5"> {{err}} </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary ms-auto my-2 px-5"><span class="fw-bolder">Submit</span></button>
+    <button type="button" id="hidden-ftype-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#ftype-modal"></button>
+    <button type="button" id="hidden-alert-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#alert-modal"></button>
+    <button type="button" id="hidden-img-err-btn" class="hidden" data-bs-toggle="modal" data-bs-target="#img-err-modal"></button>
+</form>
+{% endblock %}
+
+{% block iscript %}
+<script src="{% static '/image/js/picit.js' %}"></script>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="ftype-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="ftype-modal-h">Error!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="ftype-modal-content" class="modal-body modal_text">
+                <p>
+                    <span class="fs-5">
+                        It appears that you have not chosen a text file<br>
+                        If you believe you have chosen a text file, please click the "Force
+                        import" button.<br>
+                        If not, you may close this dialogue
+                    </span><br><br>
+                    <span class="text-warning fw-bold">Note : </span>
+                    <span class="text-warning">
+                        Keep in mind that forcing your browser to treat non-text files as text will only cause it to lag
+                        or become unresponsive.
+                    </span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="force-import-btn" class="btn btn-danger" data-bs-dismiss="modal">Force
+                    import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="alert-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="alert-modal-h">Alert</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="alert-modal-content" class="modal-body modal_text">
+                <p class="fs-5">
+                    Gotcha!! you are trying to fiddle with the site here 🙃 <br>
+                    Nice Try! 🙂
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="img-err-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold" id="img-err-modal-h">Alert</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="img-err-modal-content" class="modal-body modal_text">
+                <p class="fs-5">
+                    Please select a static image file.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="how-to-modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="info-modal-h" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3 fw-bold text-info" id="how-to-modal-h">PicIt : Text ⇄ Image Conversion</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="how-to-modal-content" class="modal-body modal_text fs-5">
+                <span class="fs-3 fw-bold text-info">What is PicIt?</span><br>
+                <span>
+                    PicIt is a fantastic feature that lets you convert text into an image and back again! It's an easy
+                    and enjoyable way to hide your messages or share secret codes. Let's explore how it
+                    works:
+                </span><br><br>
+                
+                <span class="fs-3 fw-bold text-info">How to Use PicIt?</span><br>
+                <span class="fs-4 fw-bold text-info">Text to Image:</span>
+                <ul>
+                    <li>Type in your text, and PicIt will transform it into a unique image.</li>
+                    <li>Don't worry, your text is kept safe and secure through encryption.</li>
+                    <li>Each letter is converted into beautiful colors and patterns within the image.</li>
+                </ul>
+
+                <span class="fs-4 fw-bold text-info">Image to Text:</span><br>
+                <ul>
+                    <li>Have an image with hidden text? PicIt can reveal the hidden message for you!</li>
+                    <li>Simply upload the image, and PicIt will decode it back into readable text.</li>
+                    <li>But remember, you'll need the encryption key to unlock the message!</li>
+                </ul>
+
+                <span class="fs-4 fw-bold text-info">Remember Your Encryption Key:</span> <br>
+                <span>
+                    To decode an image into text, you'll need the encryption key you used during the encoding process.
+                    The encryption key is essential and mandatory for decoding. Make sure you remember or securely write
+                    down your encryption key in a safe place. Without the encryption key, decoding the image won't be
+                    possible.
+                </span><br><br>
+
+                <span class="fs-4 fw-bold text-info">Important Limitation:</span> <br>
+                <span>
+                    Please note that PicIt has a maximum text limit of 16,000,000 characters.That might sound like a
+                    lot, and it is!<br>
+                    That's an enormous number of characters, even for very large text files. However, due to some technical 
+                    reasons, we've set this limit.
+                </span><br><br>
+
+                <span>
+                    Enjoy the power of PicIt to create hidden messages, share secret codes, or simply have fun with the
+                    magic of text and images!
+                </span><br><br>
+
+                <span class="text-warning">
+                    We take your privacy seriously and do not access or share any of the information or data that
+                    you
+                    hide within the image. All of your hidden data remains securely encrypted and protected within
+                    the
+                    image itself which is stored at our server.
+                </span><br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modals %}

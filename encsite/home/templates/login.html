@@ -8,21 +8,20 @@
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock style %}
 
-{% block loginactive %}active{% endblock loginactive %}
+{% block loginactive %}active disabled{% endblock loginactive %}
 
 {% block content %}
 <div class="login-container glass_effect rounded-5 mx-auto p-3">
-    <form action="/login" method="post" onsubmit="return onSubmit()"> {% csrf_token %}
+    <form action="/login/" method="post" onsubmit="return onSubmit()"> {% csrf_token %}
         <div class="input-container">
             <h1 class="mx-auto fw-bold">Login</h1>
             <div class="mb-2">
                 <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" name="email" id="email" value="{{values.email}}" aria-describedby="emailHelp" required>
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                <input type="email" class="form-control" placeholder="Registered Email" name="email" id="email" value="{{values.email}}" aria-describedby="emailHelp" required>
             </div>
             <div class="mb-2">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" name="password" value="{{values.password}}" id="password" required>
+                <input type="password" class="form-control" placeholder="Password" name="password" value="{{values.password}}" id="password" required>
                 <div class="form-text">Double tap on your password to show/hide</div>
                 <div class="form-text fw-bold fs-6" id="err">
                     {% if err %} 

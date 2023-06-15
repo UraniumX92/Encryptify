@@ -30,13 +30,17 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = [
-    '*',
+    '.ngrok-free.app',
+    '.vercel.app',
+    '.now.sh',
     'http://127.0.0.1',
     'localhost'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.ngrok-free.app/'
+    'https://*.ngrok-free.app/',
+    'http://*.vercel.app/',
+    'https://*.vercel.app/'
 ]
 
 TEMPLATE_DIRS = (
@@ -86,6 +90,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'encsite.wsgi.application'
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases

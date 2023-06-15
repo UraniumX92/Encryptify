@@ -12,13 +12,18 @@
 <div id="info-container" class="glass_effect rounded-5 mx-auto my-3 p-3">
     <input type="hidden" id="job_data" data-job-id="{{job_id}}">
     <p id="info_text" class="fw-bold fs-4 mx-auto"> {{job_info}} </p>
+    <div id="spinner" class="d-flex align-items-center mx-auto">
+        <div class="spinner-grow text-light mx-3" role="status"></div>
+        <h4 class="fw-bold" id="buffertext">Loading...</h4>
+    </div><div class="text-warning fs-5 mx-auto" id="img-dimensions"></div>
+    <p id="err" class="text-danger mx-auto fw-bold fs-5"></p>
     <div class="mb-2" id="stg-imgarea">
         <img src="{{isrc}}" class="mx-auto" alt="Please wait as the image loads" id="job_image" onerror="on_img_err()">
         <button id="secondary-img-download" class="btn btn-success d-block mx-auto my-1">Download Image</button>
         <a id="img-download-btn" href="#" target="_blank" class="btn btn-success hidden mx-auto my-1"></a>
     </div>
     <div class="mb-2" id="stg-textarea">
-        <textarea class="form-control my-2" id="txtArea" readonly></textarea>
+        <textarea class="form-control ta-dark my-2" id="txtArea" readonly></textarea>
         <button id="txt-download-btn" role="button" class="btn btn-success d-block mx-auto my-1">
             Download text as a file
         </button>
@@ -62,10 +67,11 @@
                 <h1 class="modal-title fs-3 fw-bold" id="ask-key-modal-h">Password Required</h1>
             </div>
             <div id="ask-key-modal-content" class="modal-body">
-                <form action="#" id="key-form">
+                <form action="#" id="key-form" onsubmit="return key_submit();">
                     <div class="mb-2">
                         <label for="key" class="form-label fw-bold">Enter password/encryption key:</label>
-                        <input type="text" class="form-control" placeholder="Enter password/encryption key here" id="stg-key" value="{{values.key}}" aria-describedby="keyHelp">
+                        <input type="password" class="form-control ta-dark" placeholder="Enter password/encryption key here" id="stg-key" value="{{values.key}}" aria-describedby="keyHelp">
+                        <div class="form-text">Double tap on your password to show/hide</div>
                     </div>
                 </form>
             </div>
