@@ -1,11 +1,11 @@
-﻿argon2-cffi==21.3.0
+argon2-cffi==21.3.0
 argon2-cffi-bindings==21.2.0
 asgiref==3.6.0
 cffi==1.15.1
 Django==4.1.7
 numpy==1.24.2
 Pillow==9.3.0
-psycopg2-binary==2.9.6
+psycopg2==2.9.6
 pycparser==2.21
 python-dotenv==0.20.0
 sqlparse==0.4.3
