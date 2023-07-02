@@ -1,4 +1,4 @@
-const file_name = "encryptify_vigenere_$ts.txt";
+const file_name = "encryptify_scramble_$ts.txt";
 const encrypt_btn = document.getElementById("e-btn");
 const decrypt_btn = document.getElementById("d-btn");
 const sp_ops = {

@@ -12,7 +12,7 @@ urlpatterns = [
     path('binary/',views.binary,name="binary"),
     # AJAX JSON Responses
     path('vgplus/',views.vgplus,name="vgplus"),
-    path('scrx/',views.scrx,name="xorx"),
+    path('scrx/',views.scrx,name="scrx"),
     path('binx/',views.binx,name="binx"),
 
 ]

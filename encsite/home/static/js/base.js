@@ -41,6 +41,12 @@ function show_hide(e){
 }
 
 function download_text_file(data,filename) {
+    try {
+        let ts = ((Date.now())/1000).toString().split('.')[0];
+        filename = filename.replace("$ts",ts)
+    } catch (error) {
+        console.log("");
+    }
     const txtfile_blob = new Blob([data], { type: 'text/plain' });
     const txtfile_elem = window.document.createElement('a');
     txtfile_elem.href = window.URL.createObjectURL(txtfile_blob);

@@ -63,6 +63,7 @@ def ciph(text: str, key: list) -> str:
     :param key:
     :return: str : encrypted text
     """
+    text = scrambler(text,key)
     ciphered_text = ''
     i = 0
     for charx in text:
@@ -98,6 +99,7 @@ def deciph(text: str, key: list) -> str:
         i += 1
         if i == len(key):
             i = 0
+    deciphered_text = unscramber(deciphered_text,key)
     return deciphered_text
 
 # text = "Hello this is the xor text which is not working fine"

@@ -28,6 +28,11 @@ imp_txt_btn.onclick = imp_txt;
 txt_download_btn.onclick = download_text_handler;
 enableDropFiles(inp_area,file_inp);
 
+function getFileName(){
+    let ts = Date.now().toString();
+    return file_name.replace("$ts",ts);
+}
+
 async function imp_txt(){
     let data = out_area.value;
     if(data.length){

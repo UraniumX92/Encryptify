@@ -100,7 +100,6 @@ def save_after(action:'function',thr_to_join:threading.Thread,action_args:list,j
     :return:
     """
     thr_to_join.join()
-    print(os.getcwd())
     img = Image.open(tmpath)
     action_args.insert(0,img)
     rimg:Image.Image = action(*action_args)

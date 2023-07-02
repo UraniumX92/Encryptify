@@ -2,6 +2,7 @@ const file_name = "encryptify_binary_$ts.txt";
 const convert_btn = document.getElementById("c-btn");
 
 convert_btn.onclick = req_handler;
+txt_download_btn.onclick = download_text_handler;
 
 function get_op(){
     let rads = document.getElementsByName("operation");

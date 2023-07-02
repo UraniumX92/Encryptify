@@ -2,7 +2,7 @@
 
 {% block util_bin %}active{% endblock util_bin %}
 
-{% block title %}Encryptify - Binary{% endblock title %}
+{% block title %}Binary - Encryptify{% endblock title %}
 
 {% load static %}
 
@@ -17,9 +17,12 @@
     <input class="form-check-input" name="operation" type="radio" role="switch" id="b2t" value="decrypt">
     <label class="form-check-label" for="b2t">Binary to Text</label>
 </div>
-<div class="btn-container ms-auto">
+<div class="btn-container mx-auto">
     <button class="btn btn-primary m-1" id="c-btn">Convert</button>
 </div>
+<button id="import-txt-btn" role="button" class="btn btn-success d-block mx-auto mb-1">
+    Import Result text
+</button>
 {% endblock key_block %}
 
 {% block rph_text %}Converted text will appear here{% endblock rph_text %}

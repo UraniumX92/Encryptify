@@ -1,14 +1,13 @@
 .btn_container{
     display: flex;
-    flex-direction: row;
-    width: 80vw;
+    flex-direction: column;
+    width: 25vw;
     justify-content: center;
     align-self: center;
 }
 
 @media (max-width: 768px){
     .btn_container{
-        flex-direction: column;
         width: 90vw;
     }
 }

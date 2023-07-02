@@ -35,6 +35,9 @@
                 <button type="button" class="btn btn-secondary m-1" onclick="clear_key();"><span class="fw-bold">Clear key field</span></button>
             </div>
             <div class="btn-container ms-auto">
+                <button id="import-txt-btn" role="button" class="btn btn-success m-1">
+                    Import Result text
+                </button>
                 <button class="btn btn-primary m-1" id="e-btn">{% block encrypt_label %}Encrypt{% endblock encrypt_label %}</button>
                 <button class="btn btn-primary m-1" id="d-btn">{% block decrypt_label %}Decrypt{% endblock decrypt_label %}</button>
             </div>
@@ -42,9 +45,6 @@
     </div>
     {% endblock key_block %}
     <div class="my-2">
-        <button id="import-txt-btn" role="button" class="btn btn-success d-block mx-auto mb-2">
-            Import below text
-        </button>
         <label for="rtxtArea" class="form-label fw-bold">Result:</label>
         <textarea class="form-control ta-dark" name="text" placeholder="{% block rph_text %}Encrypted/Decrypted text will appear here{% endblock rph_text %}" id="rtxtArea" readonly></textarea>
         <div class="form-text text-info" id="rtxlen"></div>
